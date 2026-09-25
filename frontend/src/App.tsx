@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar';
 import { TradeFeedView } from './components/TradeFeedView';
 import { DashboardView } from './components/DashboardView';
 import { CalendarView } from './components/CalendarView';
+import { NewsCalendarView } from './components/NewsCalendarView';
 import { AddTradeModal } from './components/AddTradeModal';
 import { UpdateTradeModal } from './components/UpdateTradeModal';
 import { CloseTradeModal } from './components/CloseTradeModal';
@@ -13,10 +14,10 @@ import { ApiService } from './services/api';
 import { AuthService } from './services/auth';
 import type { Trade, TradeUpdate, TradeStatus } from './types/trade';
 import type { User } from './types/auth';
-import { Zap, Database, Lock, ShieldCheck } from 'lucide-react';
+import { Zap, Database, Lock, ShieldCheck, Flame } from 'lucide-react';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<'feed' | 'dashboard' | 'calendar'>('feed');
+  const [activeTab, setActiveTab] = useState<'feed' | 'dashboard' | 'calendar' | 'news'>('feed');
   const [currentUser, setCurrentUser] = useState<User | null>(() => AuthService.getUser());
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(() => !AuthService.isAuthenticated());
   const [trades, setTrades] = useState<Trade[]>([]);
@@ -196,6 +197,20 @@ export function App() {
           </div>
 
           <div className="flex items-center space-x-2 sm:space-x-3 text-[10px] sm:text-[11px] shrink-0">
+            {/* Quick jump to News Calendar */}
+            <button
+              onClick={() => setActiveTab('news')}
+              className={`flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full font-bold transition-all cursor-pointer ${
+                activeTab === 'news'
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
+                  : 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30'
+              }`}
+            >
+              <Flame className="w-3 h-3 text-amber-400" />
+              <span>Kalender News</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+            </button>
+
             {currentUser ? (
               <span className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-[#F5B942]/10 text-[#F5B942] border border-[#F5B942]/20 font-bold">
                 <ShieldCheck className="w-3 h-3 text-[#F5B942]" />
@@ -225,8 +240,11 @@ export function App() {
 
       {/* Main Body Content */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-28 md:pb-8 min-w-0">
-        {!currentUser ? (
-          /* Unauthenticated Landing Card */
+        {/* Economic News Calendar is accessible anytime */}
+        {activeTab === 'news' ? (
+          <NewsCalendarView />
+        ) : !currentUser ? (
+          /* Unauthenticated Landing Card for Journal views */
           <div className="max-w-2xl mx-auto my-12 p-8 sm:p-12 rounded-3xl bg-[#141414] border border-[#2A2A2A] text-center shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-[#F5B942] to-transparent" />
             <div className="w-16 h-16 rounded-2xl bg-[#1D1D1D] border border-[#333333] shadow-lg shadow-[#F5B942]/10 flex items-center justify-center mx-auto mb-6">
@@ -244,6 +262,13 @@ export function App() {
                 className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#F5B942] to-[#E5A830] text-black font-extrabold text-sm shadow-lg shadow-[#F5B942]/20 hover:shadow-[#F5B942]/35 active:scale-95 transition-all cursor-pointer"
               >
                 Masuk atau Daftar Akun Gratis
+              </button>
+              <button
+                onClick={() => setActiveTab('news')}
+                className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#222222] hover:bg-[#2A2A2A] text-zinc-300 font-bold text-sm border border-[#333333] transition-all cursor-pointer flex items-center justify-center space-x-2"
+              >
+                <Flame className="w-4 h-4 text-amber-400" />
+                <span>Lihat Kalender Berita Ekonomi</span>
               </button>
             </div>
             <div className="mt-6 flex items-center justify-center space-x-6 text-xs text-zinc-500">

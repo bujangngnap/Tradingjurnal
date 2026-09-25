@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Calendar, LayoutDashboard, Radio, LogOut, LogIn } from 'lucide-react';
+import { Plus, Calendar, LayoutDashboard, Radio, LogOut, LogIn, Flame } from 'lucide-react';
 import type { User } from '../types/auth';
 
 interface NavbarProps {
-  activeTab: 'feed' | 'dashboard' | 'calendar';
-  setActiveTab: (tab: 'feed' | 'dashboard' | 'calendar') => void;
+  activeTab: 'feed' | 'dashboard' | 'calendar' | 'news';
+  setActiveTab: (tab: 'feed' | 'dashboard' | 'calendar' | 'news') => void;
   onOpenNewTrade: () => void;
   openTradesCount: number;
   currentUser: User | null;
@@ -100,6 +100,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Calendar className="w-4 h-4 text-sky-400" />
                 <span>Calendar</span>
               </button>
+
+              <button
+                onClick={() => setActiveTab('news')}
+                className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                  activeTab === 'news'
+                    ? 'bg-[#262626] text-white shadow-sm'
+                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
+                }`}
+              >
+                <Flame className="w-4 h-4 text-amber-400" />
+                <span>News Calendar</span>
+                <span className="bg-red-500/20 text-red-400 text-[9px] px-1.5 py-0.5 rounded-full font-bold">
+                  LIVE
+                </span>
+              </button>
             </nav>
 
             {/* Actions & User Profile */}
@@ -156,9 +171,9 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </header>
 
-      {/* Mobile Bottom Navigation Bar (Fixed for Thumb Reach) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 w-full bg-[#0B0B0B]/95 backdrop-blur-xl border-t border-[#262626] px-3 py-1.5 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
-        <div className="w-full grid grid-cols-3 gap-1">
+      {/* Mobile Bottom Navigation Bar (Fixed for Thumb Reach - 4 Columns) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 w-full bg-[#0B0B0B]/95 backdrop-blur-xl border-t border-[#262626] px-2 py-1.5 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+        <div className="w-full grid grid-cols-4 gap-1">
           <button
             onClick={() => setActiveTab('feed')}
             className={`flex flex-col items-center justify-center py-1.5 px-0.5 rounded-2xl transition-all cursor-pointer w-full text-center ${
@@ -168,14 +183,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <div className="relative flex justify-center">
-              <Radio className="w-5 h-5" />
+              <Radio className="w-4.5 h-4.5" />
               {openTradesCount > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 rounded-full bg-[#22C55E] text-black text-[9px] font-black flex items-center justify-center px-1">
+                <span className="absolute -top-1.5 -right-2.5 min-w-[15px] h-3.5 rounded-full bg-[#22C55E] text-black text-[8px] font-black flex items-center justify-center px-0.5">
                   {openTradesCount}
                 </span>
               )}
             </div>
-            <span className="text-[10px] mt-1 truncate w-full">Trade Feed</span>
+            <span className="text-[9px] mt-1 truncate w-full">Feed</span>
           </button>
 
           <button
@@ -186,8 +201,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            <LayoutDashboard className="w-5 h-5" />
-            <span className="text-[10px] mt-1 truncate w-full">Dashboard</span>
+            <LayoutDashboard className="w-4.5 h-4.5" />
+            <span className="text-[9px] mt-1 truncate w-full">Stats</span>
           </button>
 
           <button
@@ -198,8 +213,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            <Calendar className="w-5 h-5" />
-            <span className="text-[10px] mt-1 truncate w-full">Calendar</span>
+            <Calendar className="w-4.5 h-4.5" />
+            <span className="text-[9px] mt-1 truncate w-full">PnL Cal</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('news')}
+            className={`flex flex-col items-center justify-center py-1.5 px-0.5 rounded-2xl transition-all cursor-pointer w-full text-center ${
+              activeTab === 'news'
+                ? 'text-amber-400 bg-[#1A1A1A] font-bold shadow-inner'
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            <Flame className="w-4.5 h-4.5 text-amber-400" />
+            <span className="text-[9px] mt-1 truncate w-full">News</span>
           </button>
         </div>
       </div>
