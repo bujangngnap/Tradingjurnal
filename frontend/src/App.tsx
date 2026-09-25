@@ -4,6 +4,7 @@ import { TradeFeedView } from './components/TradeFeedView';
 import { DashboardView } from './components/DashboardView';
 import { CalendarView } from './components/CalendarView';
 import { NewsCalendarView } from './components/NewsCalendarView';
+import { LiveMarketTicker } from './components/LiveMarketTicker';
 import { AddTradeModal } from './components/AddTradeModal';
 import { UpdateTradeModal } from './components/UpdateTradeModal';
 import { CloseTradeModal } from './components/CloseTradeModal';
@@ -166,33 +167,16 @@ export function App() {
         onOpenAuth={() => setIsAuthModalOpen(true)}
       />
 
-      {/* Global Market Ticker Bar */}
-      <div className="w-full max-w-full overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden bg-[#111111] border-b border-[#222222] py-1.5 sm:py-2 px-3 sm:px-8 text-xs shrink-0">
-        <div className="inline-flex items-center justify-between gap-4 sm:gap-6 whitespace-nowrap min-w-full">
-          <div className="flex items-center space-x-4 sm:space-x-6 text-[11px] font-mono">
-            <span className="flex items-center space-x-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <strong className="text-[#F5B942]">XAUUSD</strong>
-              <span className="text-zinc-200">3,766.20</span>
-              <span className="text-emerald-400 font-bold">+1.24%</span>
-            </span>
+      {/* Real-Time Live TradingView Market Ticker Tape */}
+      <LiveMarketTicker />
 
-            <span className="flex items-center space-x-1.5 text-zinc-400">
-              <strong className="text-white">EURUSD</strong>
-              <span>1.08450</span>
-              <span className="text-emerald-400">+0.18%</span>
-            </span>
-
-            <span className="flex items-center space-x-1.5 text-zinc-400">
-              <strong className="text-white">GBPUSD</strong>
-              <span>1.29520</span>
-              <span className="text-red-400">-0.05%</span>
-            </span>
-
-            <span className="hidden md:flex items-center space-x-1.5 text-zinc-400">
-              <strong className="text-white">US30</strong>
-              <span>42,120</span>
-              <span className="text-emerald-400">+0.45%</span>
+      {/* Quick Status Bar */}
+      <div className="w-full max-w-full overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden bg-[#0D0D0D] border-b border-[#222222] py-1.5 px-3 sm:px-8 text-xs shrink-0">
+        <div className="flex items-center justify-between gap-4 whitespace-nowrap min-w-full">
+          <div className="flex items-center space-x-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[11px] font-mono text-zinc-400">
+              Live Feed: <strong className="text-[#F5B942]">TradingView Stream</strong> (Real-time)
             </span>
           </div>
 
