@@ -82,7 +82,7 @@ export const TradeCard: React.FC<TradeCardProps> = ({
   };
 
   return (
-    <div className="bg-[#161616] rounded-3xl border border-[#262626] hover:border-zinc-700/80 transition-all p-5 sm:p-6 shadow-xl relative overflow-hidden group">
+    <div className="bg-[#161616] rounded-2xl sm:rounded-3xl border border-[#262626] hover:border-zinc-700/80 transition-all p-3.5 sm:p-6 shadow-xl relative overflow-hidden group">
       
       {/* Side Glow Line */}
       <div 
@@ -92,93 +92,93 @@ export const TradeCard: React.FC<TradeCardProps> = ({
       />
 
       {/* Top Header Row */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#262626]/80">
+      <div className="flex items-center justify-between gap-2 pb-3 sm:pb-4 border-b border-[#262626]/80 min-w-0">
         
-        <div className="flex items-center space-x-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0 flex-1">
           {/* Side Indicator */}
-          <div className={`flex items-center space-x-1 px-3 py-1 rounded-xl text-xs font-black tracking-wider uppercase ${
+          <div className={`flex items-center space-x-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-xl text-[10px] sm:text-xs font-black tracking-wider uppercase shrink-0 ${
             isBuy 
               ? 'bg-[#22C55E]/15 text-[#22C55E] border border-[#22C55E]/30' 
               : 'bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/30'
           }`}>
-            {isBuy ? <ArrowUpRight className="w-4 h-4 stroke-[3]" /> : <ArrowDownRight className="w-4 h-4 stroke-[3]" />}
+            {isBuy ? <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" /> : <ArrowDownRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" />}
             <span>{trade.side}</span>
           </div>
 
           {/* Instrument Pair */}
-          <span className="font-extrabold text-lg sm:text-xl tracking-tight text-white mono-num">
+          <span className="font-extrabold text-sm sm:text-xl tracking-tight text-white mono-num shrink-0">
             {trade.pair}
           </span>
 
           {/* Lot Size */}
-          <span className="text-xs px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 font-mono font-medium">
+          <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 font-mono font-medium shrink-0">
             {trade.lot.toFixed(2)} Lot
           </span>
 
-          {/* Timeframe & Session */}
-          <span className="text-xs px-2 py-0.5 rounded-md bg-zinc-800/80 text-zinc-400 font-medium">
+          {/* Timeframe */}
+          <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-md bg-zinc-800/80 text-zinc-400 font-medium shrink-0">
             {trade.timeframe}
           </span>
           {trade.session && (
-            <span className="hidden sm:inline-block text-[11px] px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400/90 border border-amber-500/20 font-medium">
-              {trade.session} Session
+            <span className="hidden xs:inline-block text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400/90 border border-amber-500/20 font-medium shrink-0">
+              {trade.session}
             </span>
           )}
         </div>
 
         {/* Status Badge & Actions */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {getStatusBadge()}
 
           <button
             onClick={() => onDeleteTrade(trade.id)}
             title="Hapus Trade"
-            className="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+            className="p-1 sm:p-1.5 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer shrink-0"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 
       </div>
 
       {/* Main Trade Specs Matrix */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4 text-xs">
-        <div className="bg-[#1C1C1C] p-3 rounded-2xl border border-[#262626]">
-          <span className="text-zinc-400 text-[11px] block mb-0.5">Entry Price</span>
-          <span className="font-mono font-bold text-sm text-zinc-100">{trade.entry_price.toFixed(2)}</span>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 py-3 sm:py-4 text-xs">
+        <div className="bg-[#1C1C1C] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-[#262626]">
+          <span className="text-zinc-400 text-[10px] sm:text-[11px] block mb-0.5">Entry Price</span>
+          <span className="font-mono font-bold text-xs sm:text-sm text-zinc-100">{trade.entry_price.toFixed(2)}</span>
         </div>
 
-        <div className="bg-[#1C1C1C] p-3 rounded-2xl border border-[#262626]">
-          <span className="text-zinc-400 text-[11px] block mb-0.5">Stop Loss (SL)</span>
-          <span className="font-mono font-bold text-sm text-red-400">{trade.sl_price.toFixed(2)}</span>
+        <div className="bg-[#1C1C1C] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-[#262626]">
+          <span className="text-zinc-400 text-[10px] sm:text-[11px] block mb-0.5">Stop Loss (SL)</span>
+          <span className="font-mono font-bold text-xs sm:text-sm text-red-400">{trade.sl_price.toFixed(2)}</span>
         </div>
 
-        <div className="bg-[#1C1C1C] p-3 rounded-2xl border border-[#262626]">
-          <span className="text-zinc-400 text-[11px] block mb-0.5">Take Profit (TP)</span>
-          <span className="font-mono font-bold text-sm text-emerald-400">{trade.tp_price.toFixed(2)}</span>
+        <div className="bg-[#1C1C1C] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-[#262626]">
+          <span className="text-zinc-400 text-[10px] sm:text-[11px] block mb-0.5">Take Profit (TP)</span>
+          <span className="font-mono font-bold text-xs sm:text-sm text-emerald-400">{trade.tp_price.toFixed(2)}</span>
         </div>
 
-        <div className="bg-[#1C1C1C] p-3 rounded-2xl border border-[#262626]">
-          <span className="text-zinc-400 text-[11px] block mb-0.5">Risk / Reward (RR)</span>
-          <span className="font-mono font-bold text-sm text-[#F5B942]">
+        <div className="bg-[#1C1C1C] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-[#262626]">
+          <span className="text-zinc-400 text-[10px] sm:text-[11px] block mb-0.5">Risk / Reward</span>
+          <span className="font-mono font-bold text-xs sm:text-sm text-[#F5B942]">
             1:{trade.rr_ratio.toFixed(2)}
           </span>
         </div>
       </div>
 
       {/* Profit / Floating Display */}
-      <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 mb-4">
-        <div className="flex items-center space-x-2 text-xs text-zinc-400">
+      <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-zinc-900/60 border border-zinc-800/80 mb-3 sm:mb-4">
+        <div className="flex items-center space-x-1.5 text-[11px] sm:text-xs text-zinc-400">
           <Clock className="w-3.5 h-3.5 text-zinc-400" />
           <span>Opened: {new Date(trade.opened_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
 
         <div className="text-right">
-          <div className="flex items-center space-x-2">
-            <span className="text-xs text-zinc-400">
-              {isOpen ? 'Floating:' : 'Realized PnL:'}
+          <div className="flex items-center space-x-1.5 sm:space-x-2">
+            <span className="text-[11px] sm:text-xs text-zinc-400 hidden xs:inline">
+              {isOpen ? 'Floating:' : 'Realized:'}
             </span>
-            <span className={`text-base font-extrabold font-mono ${
+            <span className={`text-sm sm:text-base font-extrabold font-mono ${
               trade.profit_money > 0 
                 ? 'text-[#22C55E]' 
                 : trade.profit_money < 0 
@@ -187,7 +187,7 @@ export const TradeCard: React.FC<TradeCardProps> = ({
             }`}>
               {trade.profit_money >= 0 ? `+$${trade.profit_money.toFixed(2)}` : `-$${Math.abs(trade.profit_money).toFixed(2)}`}
             </span>
-            <span className="text-xs font-mono text-zinc-400">
+            <span className="text-[11px] sm:text-xs font-mono text-zinc-400">
               ({trade.profit_point >= 0 ? `+${trade.profit_point}` : trade.profit_point} pts)
             </span>
           </div>
@@ -207,20 +207,20 @@ export const TradeCard: React.FC<TradeCardProps> = ({
 
       {/* Screenshot Preview (if attached) */}
       {trade.screenshot_before && (
-        <div className="mb-5">
+        <div className="mb-4 sm:mb-5">
           <div 
             onClick={() => onViewImage(trade.screenshot_before!)}
-            className="relative h-44 rounded-2xl overflow-hidden border border-[#262626] cursor-pointer group/img"
+            className="relative h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-[#262626] cursor-pointer group/img"
           >
             <img 
               src={trade.screenshot_before} 
-              alt="Trade Setup Chart"
+              alt="Trade Setup Chart" 
               className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" 
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 flex items-end p-3">
-              <div className="flex items-center space-x-1.5 text-xs font-semibold text-white bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-white/10">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 flex items-end p-2.5 sm:p-3">
+              <div className="flex items-center space-x-1.5 text-[11px] sm:text-xs font-semibold text-white bg-black/60 backdrop-blur-sm px-2 sm:px-2.5 py-1 rounded-lg border border-white/10">
                 <Camera className="w-3.5 h-3.5 text-[#F5B942]" />
-                <span>Klik untuk zoom screenshot chart</span>
+                <span>Klik untuk zoom screenshot</span>
               </div>
             </div>
           </div>
@@ -228,13 +228,13 @@ export const TradeCard: React.FC<TradeCardProps> = ({
       )}
 
       {/* Live Timeline (Discord / Social Stream Style) */}
-      <div className="border-t border-[#262626] pt-4">
+      <div className="border-t border-[#262626] pt-3 sm:pt-4">
         <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center justify-between">
-          <span>Timeline Perjalanan Trade ({trade.updates.length} Updates)</span>
+          <span>Timeline Perjalanan ({trade.updates.length})</span>
           <span className="text-[10px] text-zinc-400 font-mono lowercase">live log stream</span>
         </h4>
 
-        <div className="relative pl-5 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[2px] before:bg-zinc-800">
+        <div className="relative pl-5 space-y-3 sm:space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[2px] before:bg-zinc-800">
           {trade.updates.map((update) => (
             <div key={update.id} className="relative group/timeline">
               {/* Dot Icon */}
@@ -243,8 +243,8 @@ export const TradeCard: React.FC<TradeCardProps> = ({
               </div>
 
               {/* Update Content */}
-              <div className="bg-[#121212] p-3 rounded-xl border border-zinc-800/80 hover:border-zinc-700 transition-colors">
-                <div className="flex items-center justify-between text-[11px] text-zinc-400 mb-1">
+              <div className="bg-[#121212] p-2.5 sm:p-3 rounded-xl border border-zinc-800/80 hover:border-zinc-700 transition-colors">
+                <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-zinc-400 mb-1">
                   <span className="font-mono font-medium">
                     {new Date(update.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
@@ -266,12 +266,12 @@ export const TradeCard: React.FC<TradeCardProps> = ({
       </div>
 
       {/* Bottom Action Footer */}
-      <div className="mt-5 pt-4 border-t border-[#262626] flex items-center justify-between gap-3">
+      <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-[#262626]">
         {isOpen ? (
-          <>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             <button
               onClick={() => onAddUpdate(trade)}
-              className="flex-1 flex items-center justify-center space-x-2 bg-zinc-800/90 hover:bg-zinc-700 text-zinc-100 font-semibold py-2.5 px-4 rounded-xl text-xs sm:text-sm border border-zinc-700 active:scale-98 transition-all cursor-pointer"
+              className="w-full sm:flex-1 flex items-center justify-center space-x-2 bg-zinc-800/90 hover:bg-zinc-700 text-zinc-100 font-semibold py-2.5 px-3 rounded-xl text-xs sm:text-sm border border-zinc-700 active:scale-98 transition-all cursor-pointer"
             >
               <PlusCircle className="w-4 h-4 text-[#F5B942]" />
               <span>+ Add Timeline Update</span>
@@ -279,15 +279,15 @@ export const TradeCard: React.FC<TradeCardProps> = ({
 
             <button
               onClick={() => onCloseTrade(trade)}
-              className="flex-1 flex items-center justify-center space-x-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-semibold py-2.5 px-4 rounded-xl text-xs sm:text-sm border border-emerald-500/30 active:scale-98 transition-all cursor-pointer"
+              className="w-full sm:flex-1 flex items-center justify-center space-x-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-semibold py-2.5 px-3 rounded-xl text-xs sm:text-sm border border-emerald-500/30 active:scale-98 transition-all cursor-pointer"
             >
               <CheckSquare className="w-4 h-4" />
               <span>Close Position</span>
             </button>
-          </>
+          </div>
         ) : (
-          <div className="w-full flex items-center justify-between text-xs text-zinc-400 px-1">
-            <span>Trade ini sudah selesai dicatat.</span>
+          <div className="w-full flex items-center justify-between text-[11px] sm:text-xs text-zinc-400 px-1">
+            <span>Trade selesai dicatat.</span>
             <span className="font-mono font-semibold text-zinc-300">
               Closed: {trade.closed_at ? new Date(trade.closed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
             </span>

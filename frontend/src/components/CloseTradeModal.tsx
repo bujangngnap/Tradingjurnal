@@ -70,14 +70,14 @@ export const CloseTradeModal: React.FC<CloseTradeModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-[#161616] border border-[#262626] rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-sm">
+      <div className="bg-[#161616] border border-[#262626] rounded-2xl sm:rounded-3xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#262626] flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#262626] flex items-center justify-between shrink-0">
           <div>
-            <h3 className="font-extrabold text-base text-white">Tutup Posisi Trade</h3>
-            <p className="text-xs text-zinc-400">
+            <h3 className="font-extrabold text-sm sm:text-base text-white">Tutup Posisi Trade</h3>
+            <p className="text-[11px] sm:text-xs text-zinc-400">
               {trade.side} {trade.pair} @ {trade.entry_price} ({trade.lot} Lot)
             </p>
           </div>
@@ -90,61 +90,62 @@ export const CloseTradeModal: React.FC<CloseTradeModalProps> = ({
         </div>
 
         {/* Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
+          <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1">
           
           {/* Outcome Buttons */}
           <div>
-            <label className="text-xs font-semibold text-zinc-300 block mb-2">Pilih Hasil Penutupan:</label>
+            <label className="text-[11px] sm:text-xs font-semibold text-zinc-300 block mb-1.5 sm:mb-2">Pilih Hasil Penutupan:</label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => selectOutcome('CLOSED_TP')}
-                className={`flex items-center space-x-2 p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center space-x-1.5 sm:space-x-2 p-2.5 sm:p-3 rounded-xl border text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
                   status === 'CLOSED_TP'
                     ? 'bg-[#22C55E]/20 text-[#22C55E] border-[#22C55E]'
                     : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
                 }`}
               >
-                <CheckCircle2 className="w-4 h-4 text-[#22C55E]" />
+                <CheckCircle2 className="w-4 h-4 text-[#22C55E] shrink-0" />
                 <span>🎯 TP Hit (Win)</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => selectOutcome('CLOSED_SL')}
-                className={`flex items-center space-x-2 p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center space-x-1.5 sm:space-x-2 p-2.5 sm:p-3 rounded-xl border text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
                   status === 'CLOSED_SL'
                     ? 'bg-[#EF4444]/20 text-[#EF4444] border-[#EF4444]'
                     : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
                 }`}
               >
-                <XCircle className="w-4 h-4 text-[#EF4444]" />
+                <XCircle className="w-4 h-4 text-[#EF4444] shrink-0" />
                 <span>🛑 SL Hit (Loss)</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => selectOutcome('CLOSED_BE')}
-                className={`flex items-center space-x-2 p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center space-x-1.5 sm:space-x-2 p-2.5 sm:p-3 rounded-xl border text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
                   status === 'CLOSED_BE'
                     ? 'bg-zinc-700/60 text-zinc-200 border-zinc-500'
                     : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
                 }`}
               >
-                <ShieldCheck className="w-4 h-4 text-zinc-300" />
+                <ShieldCheck className="w-4 h-4 text-zinc-300 shrink-0" />
                 <span>🛡️ Break Even</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => selectOutcome('CLOSED_MANUAL')}
-                className={`flex items-center space-x-2 p-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center space-x-1.5 sm:space-x-2 p-2.5 sm:p-3 rounded-xl border text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
                   status === 'CLOSED_MANUAL'
                     ? 'bg-amber-500/20 text-amber-300 border-amber-500'
                     : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
                 }`}
               >
-                <CheckSquare className="w-4 h-4 text-amber-400" />
+                <CheckSquare className="w-4 h-4 text-amber-400 shrink-0" />
                 <span>Manual Exit</span>
               </button>
             </div>
@@ -152,30 +153,30 @@ export const CloseTradeModal: React.FC<CloseTradeModalProps> = ({
 
           {/* Exit Price */}
           <div>
-            <label className="text-xs font-semibold text-zinc-400 block mb-1">Harga Exit Final</label>
+            <label className="text-[11px] sm:text-xs font-semibold text-zinc-400 block mb-1">Harga Exit Final</label>
             <input
               type="number"
               step="any"
               value={exitPrice}
               onChange={(e) => setExitPrice(e.target.value)}
-              className="w-full bg-[#1C1C1C] border border-[#262626] focus:border-[#F5B942] rounded-xl px-4 py-2.5 text-base font-mono font-bold text-white focus:outline-none"
+              className="w-full bg-[#1C1C1C] border border-[#262626] focus:border-[#F5B942] rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base font-mono font-bold text-white focus:outline-none"
               required
             />
           </div>
 
           {/* Real-time Calculation Summary Card */}
-          <div className="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-800 flex items-center justify-between">
+          <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-zinc-900/90 border border-zinc-800 flex items-center justify-between">
             <div>
-              <span className="text-[11px] text-zinc-400 block">Kalkulasi Net PnL:</span>
-              <span className={`text-xl font-extrabold font-mono ${
+              <span className="text-[10px] sm:text-[11px] text-zinc-400 block">Kalkulasi Net PnL:</span>
+              <span className={`text-base sm:text-xl font-extrabold font-mono ${
                 estMoney > 0 ? 'text-[#22C55E]' : estMoney < 0 ? 'text-[#EF4444]' : 'text-zinc-300'
               }`}>
                 {estMoney >= 0 ? `+$${estMoney.toFixed(2)}` : `-$${Math.abs(estMoney).toFixed(2)}`}
               </span>
             </div>
             <div className="text-right">
-              <span className="text-[11px] text-zinc-400 block">Jarak PnL Points:</span>
-              <span className="text-base font-mono font-bold text-zinc-200">
+              <span className="text-[10px] sm:text-[11px] text-zinc-400 block">Jarak PnL Points:</span>
+              <span className="text-sm sm:text-base font-mono font-bold text-zinc-200">
                 {estPoints >= 0 ? `+${estPoints}` : estPoints} pts
               </span>
             </div>
@@ -183,27 +184,29 @@ export const CloseTradeModal: React.FC<CloseTradeModalProps> = ({
 
           {/* Evaluation / Notes */}
           <div>
-            <label className="text-xs font-semibold text-zinc-300 block mb-1">Catatan Evaluasi Penutupan</label>
+            <label className="text-[11px] sm:text-xs font-semibold text-zinc-300 block mb-1">Catatan Evaluasi Penutupan</label>
             <textarea
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full bg-[#1C1C1C] border border-[#262626] focus:border-[#F5B942] rounded-xl p-3 text-xs text-zinc-100 focus:outline-none"
+              className="w-full bg-[#1C1C1C] border border-[#262626] focus:border-[#F5B942] rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 focus:outline-none"
             />
           </div>
 
-          {/* Footer */}
-          <div className="pt-3 border-t border-[#262626] flex items-center justify-end space-x-3">
+          </div>
+
+          {/* Sticky Footer */}
+          <div className="p-3.5 sm:p-4 border-t border-[#262626] bg-[#161616] flex items-center justify-end space-x-2.5 sm:space-x-3 shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
+              className="px-3.5 sm:px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#22C55E] hover:bg-[#1fb355] text-black active:scale-95 transition-all cursor-pointer"
+              className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#22C55E] hover:bg-[#1fb355] text-black active:scale-95 transition-all cursor-pointer whitespace-nowrap"
             >
               Konfirmasi Selesai & Tutup
             </button>

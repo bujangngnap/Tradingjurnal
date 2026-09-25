@@ -14,7 +14,7 @@ import { Zap, Database } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'feed' | 'dashboard' | 'calendar'>('feed');
-  const [trades, setTrades] = useState<Trade[]>([]);
+  const [trades, setTrades] = useState<Trade[]>(() => TradeStore.getTrades());
   const [isBackendConnected, setIsBackendConnected] = useState<boolean>(false);
   
   // Modals
@@ -107,7 +107,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-zinc-100 flex flex-col font-sans selection:bg-[#F5B942]/30 selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#0B0B0B] text-zinc-100 flex flex-col font-sans selection:bg-[#F5B942]/30 selection:text-white">
       
       {/* Navigation Bar */}
       <Navbar
@@ -118,9 +118,9 @@ export function App() {
       />
 
       {/* Global Market Ticker Bar */}
-      <div className="bg-[#111111] border-b border-[#222222] py-2 px-4 sm:px-8 text-xs overflow-x-auto">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-6 whitespace-nowrap">
-          <div className="flex items-center space-x-6 text-[11px] font-mono">
+      <div className="w-full max-w-full overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden bg-[#111111] border-b border-[#222222] py-1.5 sm:py-2 px-3 sm:px-8 text-xs shrink-0">
+        <div className="inline-flex items-center justify-between gap-4 sm:gap-6 whitespace-nowrap min-w-full">
+          <div className="flex items-center space-x-4 sm:space-x-6 text-[11px] font-mono">
             <span className="flex items-center space-x-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <strong className="text-[#F5B942]">XAUUSD</strong>
@@ -147,29 +147,29 @@ export function App() {
             </span>
           </div>
 
-          <div className="flex items-center space-x-3 text-[11px]">
+          <div className="flex items-center space-x-2 sm:space-x-3 text-[10px] sm:text-[11px] shrink-0">
             {isBackendConnected ? (
               <span className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
                 <Database className="w-3 h-3" />
-                <span>Laravel 11 API Connected</span>
+                <span>Laravel 11 API</span>
               </span>
             ) : (
               <span className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold">
                 <Database className="w-3 h-3" />
-                <span>Local Storage Mode</span>
+                <span>Local Storage</span>
               </span>
             )}
             
             <span className="flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
               <Zap className="w-3 h-3" />
-              <span>London Session Active</span>
+              <span>London Active</span>
             </span>
           </div>
         </div>
       </div>
 
       {/* Main Body Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-28 md:pb-8 min-w-0">
         {activeTab === 'feed' && (
           <TradeFeedView
             trades={trades}
@@ -191,7 +191,7 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#222222] bg-[#0E0E0E] py-6 px-4 text-center text-xs text-zinc-500">
+      <footer className="border-t border-[#222222] bg-[#0E0E0E] py-6 px-4 text-center text-xs text-zinc-500 mb-16 md:mb-0">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <span className="font-extrabold text-white tracking-wider">TRADING JOURNAL PRO</span>

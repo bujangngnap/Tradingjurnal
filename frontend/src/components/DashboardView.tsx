@@ -79,16 +79,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ trades, stats }) =
     <div className="space-y-6">
       
       {/* 5 High-Impact KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4">
         
         {/* Total Trades */}
-        <div className="bg-[#161616] p-4 sm:p-5 rounded-3xl border border-[#262626] relative overflow-hidden">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-semibold">Total Trade</span>
-            <Target className="w-4 h-4 text-zinc-400" />
+        <div className="bg-[#161616] p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#262626] relative overflow-hidden shadow-lg">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5 sm:mb-2">
+            <span className="text-[11px] sm:text-xs font-semibold">Total Trade</span>
+            <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-400" />
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono">{stats.totalTrades}</div>
-          <div className="mt-1 flex items-center space-x-2 text-[11px] text-zinc-400">
+          <div className="text-xl sm:text-3xl font-extrabold text-white font-mono">{stats.totalTrades}</div>
+          <div className="mt-1 flex items-center space-x-1.5 text-[10px] sm:text-[11px] text-zinc-400">
             <span className="text-emerald-400 font-bold">{stats.winCount} W</span>
             <span>•</span>
             <span className="text-red-400 font-bold">{stats.lossCount} L</span>
@@ -96,61 +96,61 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ trades, stats }) =
         </div>
 
         {/* Win Rate */}
-        <div className="bg-[#161616] p-4 sm:p-5 rounded-3xl border border-[#262626] relative overflow-hidden">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-semibold">Win Rate</span>
-            <Award className="w-4 h-4 text-[#F5B942]" />
+        <div className="bg-[#161616] p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#262626] relative overflow-hidden shadow-lg">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5 sm:mb-2">
+            <span className="text-[11px] sm:text-xs font-semibold">Win Rate</span>
+            <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#F5B942]" />
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-[#F5B942] font-mono">
+          <div className="text-xl sm:text-3xl font-extrabold text-[#F5B942] font-mono">
             {stats.winRate}%
           </div>
-          <div className="mt-1 text-[11px] text-zinc-400">
+          <div className="mt-1 text-[10px] sm:text-[11px] text-zinc-400">
             Target SMC: &gt;60%
           </div>
         </div>
 
         {/* Net Profit ($) */}
-        <div className="bg-[#161616] p-4 sm:p-5 rounded-3xl border border-[#262626] relative overflow-hidden">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-semibold">Net Profit ($)</span>
-            <DollarSign className="w-4 h-4 text-emerald-400" />
+        <div className="bg-[#161616] p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#262626] relative overflow-hidden shadow-lg">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5 sm:mb-2">
+            <span className="text-[11px] sm:text-xs font-semibold">Net Profit ($)</span>
+            <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
           </div>
-          <div className={`text-2xl sm:text-3xl font-extrabold font-mono ${
+          <div className={`text-xl sm:text-3xl font-extrabold font-mono truncate ${
             stats.netProfitMoney >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'
           }`}>
             {stats.netProfitMoney >= 0 ? `+$${stats.netProfitMoney.toLocaleString()}` : `-$${Math.abs(stats.netProfitMoney).toLocaleString()}`}
           </div>
-          <div className="mt-1 text-[11px] text-zinc-400 font-mono">
+          <div className="mt-1 text-[10px] sm:text-[11px] text-zinc-400 font-mono truncate">
             {stats.netProfitPoints >= 0 ? `+${stats.netProfitPoints}` : stats.netProfitPoints} total pts
           </div>
         </div>
 
         {/* Average RR */}
-        <div className="bg-[#161616] p-4 sm:p-5 rounded-3xl border border-[#262626] relative overflow-hidden">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-semibold">Average RR</span>
-            <Flame className="w-4 h-4 text-amber-500" />
+        <div className="bg-[#161616] p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#262626] relative overflow-hidden shadow-lg">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5 sm:mb-2">
+            <span className="text-[11px] sm:text-xs font-semibold">Average RR</span>
+            <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500" />
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono">
+          <div className="text-xl sm:text-3xl font-extrabold text-white font-mono">
             1:{stats.avgRR}
           </div>
-          <div className="mt-1 text-[11px] text-emerald-400 font-semibold">
+          <div className="mt-1 text-[10px] sm:text-[11px] text-emerald-400 font-semibold">
             Risk Asymmetric OK
           </div>
         </div>
 
         {/* Profit Hari Ini */}
-        <div className="col-span-2 lg:col-span-1 bg-[#161616] p-4 sm:p-5 rounded-3xl border border-[#262626] relative overflow-hidden">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-semibold">Profit Hari Ini</span>
-            <Clock className="w-4 h-4 text-sky-400" />
+        <div className="col-span-2 lg:col-span-1 bg-[#161616] p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#262626] relative overflow-hidden shadow-lg">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5 sm:mb-2">
+            <span className="text-[11px] sm:text-xs font-semibold">Profit Hari Ini</span>
+            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-400" />
           </div>
-          <div className={`text-2xl sm:text-3xl font-extrabold font-mono ${
+          <div className={`text-xl sm:text-3xl font-extrabold font-mono truncate ${
             stats.profitToday >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'
           }`}>
             {stats.profitToday >= 0 ? `+$${stats.profitToday.toLocaleString()}` : `-$${Math.abs(stats.profitToday).toLocaleString()}`}
           </div>
-          <div className="mt-1 text-[11px] text-zinc-400">
+          <div className="mt-1 text-[10px] sm:text-[11px] text-zinc-400">
             Realized 24h
           </div>
         </div>
@@ -158,21 +158,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ trades, stats }) =
       </div>
 
       {/* Main Chart: Equity Growth Curve */}
-      <div className="bg-[#161616] p-5 sm:p-6 rounded-3xl border border-[#262626] shadow-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div className="bg-[#161616] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-[#262626] shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 mb-4 sm:mb-6">
           <div>
             <h3 className="font-extrabold text-base sm:text-lg text-white">Equity Growth Curve</h3>
-            <p className="text-xs text-zinc-400">Pertumbuhan saldo akun berbasis trade histori kumulatif</p>
+            <p className="text-[11px] sm:text-xs text-zinc-400">Pertumbuhan saldo akun berbasis trade histori kumulatif</p>
           </div>
           <div className="flex items-center space-x-2 text-xs">
             <span className="w-2.5 h-2.5 rounded-full bg-[#22C55E]" />
-            <span className="text-zinc-300 font-semibold">Simulated Equity: ${equityData[equityData.length - 1]?.equity.toLocaleString()}</span>
+            <span className="text-zinc-300 font-semibold font-mono text-xs">Equity: ${equityData[equityData.length - 1]?.equity.toLocaleString()}</span>
           </div>
         </div>
 
-        <div className="h-64 sm:h-72 w-full">
+        <div className="h-56 sm:h-72 w-full -ml-2 sm:ml-0">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={equityData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+            <AreaChart data={equityData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <defs>
                 <linearGradient id="equityGlow" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#22C55E" stopOpacity={0.35}/>
@@ -182,13 +182,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ trades, stats }) =
               <XAxis 
                 dataKey="name" 
                 stroke="#52525b" 
-                fontSize={11} 
+                fontSize={10} 
                 tickLine={false} 
               />
               <YAxis 
                 stroke="#52525b" 
-                fontSize={11} 
+                fontSize={10} 
                 tickLine={false}
+                width={50}
                 domain={['auto', 'auto']}
                 tickFormatter={(val) => `$${val}`}
               />
@@ -206,7 +207,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ trades, stats }) =
                 type="monotone" 
                 dataKey="equity" 
                 stroke="#22C55E" 
-                strokeWidth={3} 
+                strokeWidth={2.5} 
                 fillOpacity={1} 
                 fill="url(#equityGlow)" 
               />
@@ -216,27 +217,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ trades, stats }) =
       </div>
 
       {/* Breakdown Grid: Sessions & Timeframes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5">
         
         {/* Session Performance */}
-        <div className="bg-[#161616] p-5 sm:p-6 rounded-3xl border border-[#262626]">
-          <div className="flex items-center space-x-2 mb-4">
+        <div className="bg-[#161616] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-[#262626]">
+          <div className="flex items-center space-x-2 mb-3 sm:mb-4">
             <Compass className="w-4 h-4 text-[#F5B942]" />
             <h4 className="font-extrabold text-sm sm:text-base text-white">Performa Sesi Trading</h4>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5 sm:space-y-3">
             {sessionStats.map(s => (
-              <div key={s.session} className="p-3.5 rounded-2xl bg-[#1C1C1C] border border-[#262626] flex items-center justify-between">
+              <div key={s.session} className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#1C1C1C] border border-[#262626] flex items-center justify-between">
                 <div>
-                  <span className="font-bold text-sm text-zinc-100 block">{s.session} Session</span>
-                  <span className="text-xs text-zinc-400">{s.trades} trades dieksekusi</span>
+                  <span className="font-bold text-xs sm:text-sm text-zinc-100 block">{s.session} Session</span>
+                  <span className="text-[11px] text-zinc-400">{s.trades} trades</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs px-2 py-0.5 rounded-md bg-zinc-800 text-[#F5B942] font-mono font-bold mr-2">
+                  <span className="text-[11px] px-1.5 sm:px-2 py-0.5 rounded-md bg-zinc-800 text-[#F5B942] font-mono font-bold mr-1.5 sm:mr-2">
                     {s.winRate}% WR
                   </span>
-                  <span className={`font-mono font-bold text-sm ${s.profit >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
+                  <span className={`font-mono font-bold text-xs sm:text-sm ${s.profit >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
                     {s.profit >= 0 ? `+$${s.profit}` : `-$${Math.abs(s.profit)}`}
                   </span>
                 </div>
@@ -246,24 +247,24 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ trades, stats }) =
         </div>
 
         {/* Timeframe Performance */}
-        <div className="bg-[#161616] p-5 sm:p-6 rounded-3xl border border-[#262626]">
-          <div className="flex items-center space-x-2 mb-4">
+        <div className="bg-[#161616] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-[#262626]">
+          <div className="flex items-center space-x-2 mb-3 sm:mb-4">
             <BarChart3 className="w-4 h-4 text-emerald-400" />
             <h4 className="font-extrabold text-sm sm:text-base text-white">Breakdown Timeframe Entry</h4>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5 sm:space-y-3">
             {timeframeData.map(tf => (
-              <div key={tf.timeframe} className="p-3.5 rounded-2xl bg-[#1C1C1C] border border-[#262626] flex items-center justify-between">
+              <div key={tf.timeframe} className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#1C1C1C] border border-[#262626] flex items-center justify-between">
                 <div>
-                  <span className="font-mono font-bold text-sm text-zinc-100 block">{tf.timeframe} Setup</span>
-                  <span className="text-xs text-zinc-400">{tf.count} entries</span>
+                  <span className="font-mono font-bold text-xs sm:text-sm text-zinc-100 block">{tf.timeframe} Setup</span>
+                  <span className="text-[11px] text-zinc-400">{tf.count} entries</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs px-2 py-0.5 rounded-md bg-zinc-800 text-emerald-400 font-mono font-bold mr-2">
+                  <span className="text-[11px] px-1.5 sm:px-2 py-0.5 rounded-md bg-zinc-800 text-emerald-400 font-mono font-bold mr-1.5 sm:mr-2">
                     {tf.winRate}% WR
                   </span>
-                  <span className={`font-mono font-bold text-sm ${tf.profit >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
+                  <span className={`font-mono font-bold text-xs sm:text-sm ${tf.profit >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
                     {tf.profit >= 0 ? `+$${tf.profit}` : `-$${Math.abs(tf.profit)}`}
                   </span>
                 </div>

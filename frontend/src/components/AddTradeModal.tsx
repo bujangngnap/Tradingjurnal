@@ -172,31 +172,32 @@ export const AddTradeModal: React.FC<AddTradeModalProps> = ({ isOpen, onClose, o
   return (
     <div 
       onPaste={handlePaste}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-sm"
     >
-      <div className="bg-[#161616] border border-[#262626] rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 my-8">
+      <div className="bg-[#161616] border border-[#262626] rounded-2xl sm:rounded-3xl w-full max-w-xl max-h-[94vh] sm:max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         
         {/* Modal Header */}
-        <div className="px-6 py-5 border-b border-[#262626] flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-[#262626] flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#F5B942]/10 border border-[#F5B942]/20 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#F5B942]/10 border border-[#F5B942]/20 flex items-center justify-center shrink-0">
               <TrendingUp className="w-4 h-4 text-[#F5B942]" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base text-white">Catat Posisi Trade Baru</h3>
-              <p className="text-xs text-zinc-400">Log entry dengan disiplin SMC & Drag & Drop Screenshot</p>
+              <h3 className="font-extrabold text-sm sm:text-base text-white">Catat Posisi Trade Baru</h3>
+              <p className="text-[11px] sm:text-xs text-zinc-400">Log entry SMC & Drag & Drop Screenshot</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-colors cursor-pointer"
+            className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Modal Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        {/* Modal Body Form */}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
           
           {/* Pair & Side Selector */}
           <div className="space-y-2">
@@ -492,18 +493,20 @@ export const AddTradeModal: React.FC<AddTradeModalProps> = ({ isOpen, onClose, o
             )}
           </div>
 
-          {/* Modal Footer */}
-          <div className="pt-3 border-t border-[#262626] flex items-center justify-end space-x-3">
+          </div>
+
+          {/* Sticky Modal Footer */}
+          <div className="p-3.5 sm:p-4 border-t border-[#262626] bg-[#161616] flex items-center justify-end space-x-2.5 sm:space-x-3 shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+              className="px-3.5 sm:px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-[#F5B942] to-[#E5A830] hover:from-[#f8c45e] text-black shadow-lg shadow-[#F5B942]/20 active:scale-95 transition-all cursor-pointer"
+              className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-[#F5B942] to-[#E5A830] hover:from-[#f8c45e] text-black shadow-lg shadow-[#F5B942]/20 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
             >
               Simpan & Buka Posisi
             </button>

@@ -38,16 +38,16 @@ export const TradeFeedView: React.FC<TradeFeedViewProps> = ({
   const uniquePairs = Array.from(new Set(trades.map(t => t.pair)));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       
       {/* Top Banner / Filter Bar */}
-      <div className="bg-[#161616] p-4 sm:p-5 rounded-3xl border border-[#262626] flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-[#161616] p-3 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#262626] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-lg min-w-0">
         
-        {/* Status Filters */}
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        {/* Status Filter Pills (Horizontal scrollable on mobile) */}
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden w-full min-w-0">
           <button
             onClick={() => setStatusFilter('ALL')}
-            className={`px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               statusFilter === 'ALL'
                 ? 'bg-white text-black shadow-md'
                 : 'text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800'
@@ -58,7 +58,7 @@ export const TradeFeedView: React.FC<TradeFeedViewProps> = ({
 
           <button
             onClick={() => setStatusFilter('OPEN')}
-            className={`flex items-center space-x-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               statusFilter === 'OPEN'
                 ? 'bg-amber-400 text-black shadow-md'
                 : 'text-amber-400/90 hover:text-amber-300 bg-amber-400/10 border border-amber-400/20'
@@ -70,7 +70,7 @@ export const TradeFeedView: React.FC<TradeFeedViewProps> = ({
 
           <button
             onClick={() => setStatusFilter('WIN')}
-            className={`px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               statusFilter === 'WIN'
                 ? 'bg-[#22C55E] text-black shadow-md'
                 : 'text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 border border-emerald-500/20'
@@ -81,7 +81,7 @@ export const TradeFeedView: React.FC<TradeFeedViewProps> = ({
 
           <button
             onClick={() => setStatusFilter('LOSS')}
-            className={`px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               statusFilter === 'LOSS'
                 ? 'bg-[#EF4444] text-white shadow-md'
                 : 'text-red-400 hover:text-red-300 bg-red-500/10 border border-red-500/20'
@@ -91,19 +91,25 @@ export const TradeFeedView: React.FC<TradeFeedViewProps> = ({
           </button>
         </div>
 
-        {/* Pair Filter Dropdown / Chips */}
-        <div className="flex items-center space-x-2">
-          <Filter className="w-3.5 h-3.5 text-zinc-400" />
-          <select
-            value={pairFilter}
-            onChange={(e) => setPairFilter(e.target.value)}
-            className="bg-[#1C1C1C] border border-[#262626] rounded-xl px-3 py-1.5 text-xs font-bold text-zinc-200 focus:outline-none cursor-pointer"
-          >
-            <option value="ALL">Semua Pair</option>
-            {uniquePairs.map(p => (
-              <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
+        {/* Pair Filter Dropdown */}
+        <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-[#262626] min-w-0">
+          <div className="flex items-center space-x-1.5 text-xs text-zinc-400 font-semibold sm:hidden shrink-0">
+            <Filter className="w-3.5 h-3.5 text-zinc-400" />
+            <span>Filter Pair:</span>
+          </div>
+          <div className="flex items-center space-x-2 shrink-0">
+            <Filter className="w-3.5 h-3.5 text-zinc-400 hidden sm:inline" />
+            <select
+              value={pairFilter}
+              onChange={(e) => setPairFilter(e.target.value)}
+              className="bg-[#1C1C1C] border border-[#262626] rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-bold text-zinc-200 focus:outline-none cursor-pointer"
+            >
+              <option value="ALL">Semua Pair</option>
+              {uniquePairs.map(p => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
       </div>
