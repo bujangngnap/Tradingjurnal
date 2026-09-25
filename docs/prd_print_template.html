@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PRD - Trading Journal Pro v1.0</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+      @bottom-right {
+        content: counter(page);
+        font-family: 'Inter', sans-serif;
+        font-size: 9pt;
+        color: #71717a;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #18181b;
+      background: #ffffff;
+      line-height: 1.55;
+      font-size: 10pt;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Cover Header */
+    .header-banner {
+      border-bottom: 2px solid #09090b;
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 9999px;
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .brand-title {
+      font-size: 24pt;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #09090b;
+      margin: 8px 0 4px 0;
+    }
+
+    .brand-subtitle {
+      font-size: 11pt;
+      color: #71717a;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .doc-meta-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      background: #f8fafc;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .doc-meta-table td {
+      padding: 8px 14px;
+      font-size: 9pt;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .doc-meta-table td.label {
+      font-weight: 600;
+      color: #475569;
+      width: 28%;
+      background: #f1f5f9;
+    }
+
+    .doc-meta-table td.val {
+      color: #0f172a;
+      font-weight: 500;
+    }
+
+    h1 {
+      font-size: 16pt;
+      font-weight: 800;
+      color: #09090b;
+      border-bottom: 1.5px solid #e4e4e7;
+      padding-bottom: 6px;
+      margin-top: 26px;
+      margin-bottom: 12px;
+      page-break-after: avoid;
+    }
+
+    h2 {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #18181b;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 10.5pt;
+      font-weight: 600;
+      color: #27272a;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      page-break-after: avoid;
+    }
+
+    p {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #3f3f46;
+    }
+
+    ul, ol {
+      margin-top: 0;
+      margin-bottom: 12px;
+      padding-left: 20px;
+      color: #3f3f46;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    /* Tables */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 18px 0;
+      font-size: 8.5pt;
+      border: 1px solid #e4e4e7;
+      border-radius: 6px;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+
+    table.data-table th {
+      background: #09090b;
+      color: #ffffff;
+      font-weight: 600;
+      text-align: left;
+      padding: 7px 10px;
+      font-size: 8.5pt;
+      letter-spacing: 0.02em;
+    }
+
+    table.data-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #f4f4f5;
+      color: #27272a;
+    }
+
+    table.data-table tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    table.data-table tr:hover td {
+      background: #f4f4f5;
+    }
+
+    /* Callout & Highlights */
+    .callout {
+      background: #f4f4f5;
+      border-left: 4px solid #f59e0b;
+      padding: 10px 14px;
+      margin: 12px 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 9pt;
+      color: #27272a;
+      page-break-inside: avoid;
+    }
+
+    .callout strong {
+      color: #09090b;
+    }
+
+    .callout-pro {
+      background: #09090b;
+      color: #f4f4f5;
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin: 16px 0;
+      page-break-inside: avoid;
+    }
+
+    .callout-pro h4 {
+      margin: 0 0 6px 0;
+      font-size: 11pt;
+      color: #f5b942;
+    }
+
+    .callout-pro p {
+      color: #d4d4d8;
+      font-size: 9pt;
+      margin-bottom: 0;
+    }
+
+    /* Code & ASCII Wireframes */
+    pre {
+      background: #18181b;
+      color: #f4f4f5;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.8pt;
+      overflow-x: auto;
+      margin: 10px 0 16px 0;
+      line-height: 1.4;
+      page-break-inside: avoid;
+      border: 1px solid #27272a;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5pt;
+      background: #f4f4f5;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #09090b;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    .tag-gold {
+      background: #fef3c7;
+      color: #b45309;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 8pt;
+    }
+
+    .tag-green {
+      background: #dcfce7;
+      color: #15803d;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 8pt;
+    }
+
+    .tag-red {
+      background: #fee2e2;
+      color: #b91c1c;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 8pt;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header-banner">
+    <div>
+      <span class="badge-pill">Startup Engineering Spec</span>
+      <h1 class="brand-title">Trading Journal Pro</h1>
+      <p class="brand-subtitle">Product Requirements Document (PRD) — MVP v1.0 & Scalable Architecture</p>
+    </div>
+    <div style="text-align: right; padding-top: 8px;">
+      <span style="font-weight: 700; font-size: 11pt; color: #09090b;">CONFIDENTIAL</span><br>
+      <span style="font-size: 8.5pt; color: #71717a;">Version 1.0 (MVP)</span>
+    </div>
+  </div>
+
+  <!-- METADATA TABLE -->
+  <table class="doc-meta-table">
+    <tr>
+      <td class="label">Product Name</td>
+      <td class="val">Trading Journal Pro (Desktop & Mobile Web)</td>
+      <td class="label">Status</td>
+      <td class="val"><span class="tag-green">Ready for Development</span></td>
+    </tr>
+    <tr>
+      <td class="label">Target Market</td>
+      <td class="val">Discretionary & SMC Forex/Gold (XAUUSD) Traders</td>
+      <td class="label">Timeline</td>
+      <td class="val">Phase 1 MVP (6 Sprints / 3–4 Weeks)</td>
+    </tr>
+    <tr>
+      <td class="label">Core Tech Stack</td>
+      <td class="val">Laravel 11 REST API + MySQL + React 19 + Tailwind CSS</td>
+      <td class="label">Future Bridges</td>
+      <td class="val">MetaTrader 5 (MT5 EA) + AI Trading Coach (LLM)</td>
+    </tr>
+  </table>
+
+  <!-- SECTION 1 -->
+  <h1>1. Executive Summary & Product Vision</h1>
+  <p><strong>Trading Journal Pro</strong> dirancang untuk menjadi <em>"Linear / Discord for Financial Traders"</em>. Platform ini bukan sekadar arsip statis untuk mencatat histori transaksi, melainkan sistem operasi harian bagi trader untuk <strong>mencatat perjalanan posisi secara live (timeline updates)</strong>, memantau risiko secara real-time, mengidentifikasi kebocoran strategi (strategy leaks), dan menumbuhkan disiplin eksekusi melalui visualisasi data modern berestetika tinggi.</p>
+
+  <div class="callout">
+    <strong>Masalah Utama yang Diselesaikan:</strong>
+    <ul>
+      <li><strong>Catatan Tercecer:</strong> Jurnal di Excel/Notion kaku, lambat diakses, dan tidak memiliki kalkulasi metrik otomatis.</li>
+      <li><strong>Kehilangan Konteks Emosi & Timeline:</strong> Saat trade berlangsung, trader panik atau overthinking karena tidak ada pencatatan perjalanan posisi bertahap.</li>
+      <li><strong>Statistik Manual:</strong> Sulit mengetahui Win Rate mingguan, Average RR, jam entry paling profitable, dan pair terbaik secara cepat.</li>
+      <li><strong>Persiapan Otomasi:</strong> Trader ingin jurnal yang hari ini bisa dipakai manual secara instan, namun arsitekturnya siap dicolok ke MT5 dan AI.</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 2 -->
+  <h1>2. User Persona</h1>
+  <h3>Raihan (Primary User — Discretionary SMC Trader)</h3>
+  <ul>
+    <li><strong>Instrumen Utama:</strong> XAUUSD (Gold) dan Major FX (EURUSD, GBPUSD).</li>
+    <li><strong>Metodologi:</strong> Smart Money Concepts (SMC - Break of Structure, Liquidity Sweep, Order Block, FVG) dipadukan dengan Key Support & Resistance (Timeframe M5 & M15).</li>
+    <li><strong>Platform:</strong> MetaTrader 5 (MT5 Desktop & Mobile).</li>
+    <li><strong>Pain Points:</strong> Sering lupa alasan entry setelah posisi tertutup; kesulitan mengukur konsistensi Risk-to-Reward (RR); ingin jurnal yang estetik seperti social feed Discord/X.</li>
+  </ul>
+
+  <!-- SECTION 3 -->
+  <h1>3. Scope MVP (MoSCoW Matrix)</h1>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Kategori</th>
+        <th style="width: 45%;">Fitur</th>
+        <th style="width: 30%;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Must Have (MVP)</strong></td>
+        <td>Autentikasi (Register/Login via Sanctum), Dashboard Ringkasan, Form Tambah Trade Cepat (&lt;30s), Live Timeline Feed, Update Status Trade (+Point / SL to BE), Statistik Dasar, Upload Screenshot Chart</td>
+        <td><span class="tag-green">Sprint 1–4</span></td>
+      </tr>
+      <tr>
+        <td><strong>Should Have</strong></td>
+        <td>Kalender Trading Heatmap (Hijau Win / Merah Loss), Filter Pair & Sesi (London/NY), Kalkulator Otomatis RR & Pip/Point</td>
+        <td><span class="tag-green">Sprint 4</span></td>
+      </tr>
+      <tr>
+        <td><strong>Could Have (Phase 2)</strong></td>
+        <td>Live market price quotations, Auto-update floating pip real-time, Multi-screenshot gallery per trade, Export PDF Report</td>
+        <td><span class="tag-gold">Phase 2</span></td>
+      </tr>
+      <tr>
+        <td><strong>Won't Have in MVP (Phase 3)</strong></td>
+        <td>Auto-sync posisi langsung dari MetaTrader 5 (MT5 EA), AI Trading Coach review otomatis, Telegram Notification Bot, Copy trading</td>
+        <td><span class="tag-red">Phase 3</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 4 -->
+  <h1>4. Information Architecture & User Journey</h1>
+  <p>Alur interaksi pengguna dirancang sangat ringkas:</p>
+  <pre>
+[1. User Login] 
+      ↓
+[2. Dashboard Overview] ──(Cek KPI: Win Rate, Net Profit, Equity Curve)
+      ↓
+[3. Klik '+ New Trade'] ──(Isi Pair, Side, Entry, SL, TP, Reason SMC, Upload SS)
+      ↓
+[4. Trade Feed (Discord Style)] ──(Posisi tampil di kartu interaktif)
+      ↓
+[5. Add Timeline Update] ──(Running +100 point, Geser SL ke BE, Partial TP)
+      ↓
+[6. Close Position] ──(TP Hit / SL Hit / Manual Exit)
+      ↓
+[7. Auto-Recalculate] ──(Statistik Dashboard & Kalender P&L ter-update instan)
+  </pre>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 5 -->
+  <h1>5. UI/UX Specifications & Wireframes</h1>
+
+  <h3>5.1 Design Tokens (Luxury Dark Mode)</h3>
+  <ul>
+    <li><strong>Background Utama:</strong> <code>#0B0B0B</code> (Obsidian Black)</li>
+    <li><strong>Card / Container:</strong> <code>#161616</code> dengan border halus <code>#262626</code></li>
+    <li><strong>Warna Aksen:</strong> Gold XAUUSD <code>#F5B942</code>, Emerald Profit <code>#22C55E</code>, Rose Loss <code>#EF4444</code></li>
+    <li><strong>Border Radius:</strong> Card <code>24px</code>, Button & Input <code>14px</code>, Badge <code>9999px</code></li>
+    <li><strong>Typography:</strong> <code>Inter</code> (Interface) dan <code>Geist Mono</code> (Data Finansial & Harga)</li>
+  </ul>
+
+  <h3>5.2 Trade Feed (The Core Differentiator — Discord/X Style)</h3>
+  <pre>
+┌────────────────────────────────────────────────────────────────────────┐
+│  🟢 BUY XAUUSD   Lot: 0.50  │  Entry: 3765.20  │  SL: 3760.00  │  TP: 3780.00  │
+│  Timeframe: M5   │  Session: London Open  │  Risk-to-Reward: 1:2.84    │
+│  Reason: "M5 Liquidity Sweep at previous London Low + Bullish CHoCH"   │
+│  Screenshot: [ Chart_M5_Setup.png ]                                    │
+│                                                                        │
+│  TIMELINE PERJALANAN TRADE:                                            │
+│  • 09:15 - Posisi dieksekusi di 3765.20                                │
+│  • 09:47 - 🚀 Running update: +100 point (Price: 3766.20). Float +$50 │
+│  • 10:02 - 🛡️ Stop Loss digeser ke Break Even (3765.20). Risk: $0     │
+│  • 10:15 - 🎯 TAKE PROFIT HIT! +148 point | Realized Profit: +$740.00  │
+│                                                                        │
+│  [ + Tambah Update ]     [ Edit Trade ]     [ Tutup Posisi ]           │
+└────────────────────────────────────────────────────────────────────────┘
+  </pre>
+
+  <!-- SECTION 6 -->
+  <h1>6. Database Design (MySQL DDL Specification)</h1>
+
+  <h3>Tabel: <code>users</code></h3>
+  <table class="data-table">
+    <thead><tr><th>Field</th><th>Type</th><th>Keterangan</th></tr></thead>
+    <tbody>
+      <tr><td><code>id</code></td><td>BIGINT UNSIGNED (PK)</td><td>User unique ID</td></tr>
+      <tr><td><code>name</code></td><td>VARCHAR(100)</td><td>Nama pengguna</td></tr>
+      <tr><td><code>email</code></td><td>VARCHAR(150) (UNIQUE)</td><td>Email akun</td></tr>
+      <tr><td><code>password</code></td><td>VARCHAR(255)</td><td>Hashed password (bcrypt)</td></tr>
+      <tr><td><code>initial_balance</code></td><td>DECIMAL(15,2)</td><td>Saldo awal akun trading (default $10,000)</td></tr>
+      <tr><td><code>current_balance</code></td><td>DECIMAL(15,2)</td><td>Saldo berjalan akun</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tabel: <code>trades</code></h3>
+  <table class="data-table">
+    <thead><tr><th>Field</th><th>Type</th><th>Keterangan</th></tr></thead>
+    <tbody>
+      <tr><td><code>id</code></td><td>BIGINT UNSIGNED (PK)</td><td>Trade ID unik</td></tr>
+      <tr><td><code>user_id</code></td><td>BIGINT UNSIGNED (FK)</td><td>Relasi ke tabel <code>users.id</code></td></tr>
+      <tr><td><code>pair</code></td><td>VARCHAR(20)</td><td>Instrumen (misal: <code>XAUUSD</code>, <code>EURUSD</code>)</td></tr>
+      <tr><td><code>side</code></td><td>ENUM('BUY','SELL')</td><td>Arah posisi</td></tr>
+      <tr><td><code>entry_price</code></td><td>DECIMAL(15,5)</td><td>Harga eksekusi awal</td></tr>
+      <tr><td><code>sl_price</code></td><td>DECIMAL(15,5)</td><td>Harga Stop Loss</td></tr>
+      <tr><td><code>tp_price</code></td><td>DECIMAL(15,5)</td><td>Harga Take Profit</td></tr>
+      <tr><td><code>exit_price</code></td><td>DECIMAL(15,5) (NULL)</td><td>Harga saat posisi ditutup</td></tr>
+      <tr><td><code>lot</code></td><td>DECIMAL(8,2)</td><td>Ukuran lot</td></tr>
+      <tr><td><code>timeframe</code></td><td>VARCHAR(10)</td><td>M1, M5, M15, H1, H4, D1</td></tr>
+      <tr><td><code>session</code></td><td>VARCHAR(30)</td><td>Asian, London, New York</td></tr>
+      <tr><td><code>reason</code></td><td>TEXT</td><td>Alasan entry (SMC, S/R, Trend, dsb)</td></tr>
+      <tr><td><code>status</code></td><td>ENUM</td><td><code>OPEN</code>, <code>CLOSED_TP</code>, <code>CLOSED_SL</code>, <code>CLOSED_BE</code>, <code>CLOSED_MANUAL</code></td></tr>
+      <tr><td><code>profit_point</code></td><td>DECIMAL(12,2)</td><td>Hasil PnL dalam satuan point/pip</td></tr>
+      <tr><td><code>profit_money</code></td><td>DECIMAL(15,2)</td><td>Hasil PnL dalam mata uang USD</td></tr>
+      <tr><td><code>rr_ratio</code></td><td>DECIMAL(6,2)</td><td>Rasio Risk to Reward</td></tr>
+      <tr><td><code>screenshot_before</code></td><td>VARCHAR(255)</td><td>File path screenshot sebelum entry</td></tr>
+      <tr><td><code>screenshot_after</code></td><td>VARCHAR(255)</td><td>File path screenshot setelah exit</td></tr>
+      <tr><td><code>opened_at</code></td><td>DATETIME</td><td>Waktu posisi dibuka</td></tr>
+      <tr><td><code>closed_at</code></td><td>DATETIME</td><td>Waktu posisi ditutup</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tabel: <code>trade_updates</code> (Timeline Log)</h3>
+  <table class="data-table">
+    <thead><tr><th>Field</th><th>Type</th><th>Keterangan</th></tr></thead>
+    <tbody>
+      <tr><td><code>id</code></td><td>BIGINT UNSIGNED (PK)</td><td>Update ID unik</td></tr>
+      <tr><td><code>trade_id</code></td><td>BIGINT UNSIGNED (FK)</td><td>Relasi ke tabel <code>trades.id</code> (Cascade on delete)</td></tr>
+      <tr><td><code>update_type</code></td><td>ENUM</td><td><code>ENTRY</code>, <code>PROGRESS</code>, <code>SL_TO_BE</code>, <code>PARTIAL_TP</code>, <code>EXIT</code>, <code>NOTE</code></td></tr>
+      <tr><td><code>message</code></td><td>TEXT</td><td>Teks pesan perjalanan trade</td></tr>
+      <tr><td><code>current_price</code></td><td>DECIMAL(15,5)</td><td>Harga saat update dibuat</td></tr>
+      <tr><td><code>floating_points</code></td><td>DECIMAL(12,2)</td><td>Jarak point floating profit/loss</td></tr>
+      <tr><td><code>floating_money</code></td><td>DECIMAL(15,2)</td><td>Estimasi nominal uang floating</td></tr>
+      <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>Waktu pembuatan update</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 7 -->
+  <h1>7. RESTful API Endpoints</h1>
+  <table class="data-table">
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Fungsi</th></tr></thead>
+    <tbody>
+      <tr><td><code>POST</code></td><td><code>/api/v1/auth/register</code></td><td>Pendaftaran akun baru (mengembalikan Sanctum token)</td></tr>
+      <tr><td><code>POST</code></td><td><code>/api/v1/auth/login</code></td><td>Login user dengan email & password</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/v1/auth/me</code></td><td>Ambil data user aktif & ringkasan saldo</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/v1/trades</code></td><td>Ambil daftar trade (filter status, pair, tanggal)</td></tr>
+      <tr><td><code>POST</code></td><td><code>/api/v1/trades</code></td><td>Buat trade baru (mendukung upload gambar screenshot)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/v1/trades/{id}</code></td><td>Ambil detail lengkap trade berserta seluruh timelinenya</td></tr>
+      <tr><td><code>PATCH</code></td><td><code>/api/v1/trades/{id}/close</code></td><td>Tutup trade (input harga exit & tentukan status akhir)</td></tr>
+      <tr><td><code>POST</code></td><td><code>/api/v1/trades/{id}/updates</code></td><td>Tambah update progres ke timeline trade (+100 pt, BE, dsb)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/v1/analytics/overview</code></td><td>Data KPI Dashboard (Win Rate, Total Trades, Net PnL, RR)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/v1/calendar</code></td><td>Data kalender bulanan (pembagian hari profit vs rugi)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 8 -->
+  <h1>8. Development Sprints (Roadmap Eksekusi)</h1>
+  <table class="data-table">
+    <thead><tr><th>Sprint</th><th>Durasi</th><th>Fokus Pekerjaan</th><th>Milestone</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Sprint 0</strong></td>
+        <td>2 Hari</td>
+        <td>PRD v1.0, ERD, API Specs, Design Tokens</td>
+        <td><span class="tag-green">SELESAI (Dokumen & PDF Siap)</span></td>
+      </tr>
+      <tr>
+        <td><strong>Sprint 1</strong></td>
+        <td>4 Hari</td>
+        <td>Laravel 11 REST API, MySQL Migrations, Sanctum Auth, CRUD Trade</td>
+        <td>Backend & Database Aktif, API tested</td>
+      </tr>
+      <tr>
+        <td><strong>Sprint 2</strong></td>
+        <td>4 Hari</td>
+        <td>Vite React Setup, Dark Theme, Form <code>+ New Trade</code>, Upload SS</td>
+        <td>Bisa input trade baru & preview SS</td>
+      </tr>
+      <tr>
+        <td><strong>Sprint 3</strong></td>
+        <td>4 Hari</td>
+        <td>Discord-style Trade Feed, Sub-timeline interaktif, Quick Updates</td>
+        <td>Timeline update berjalan lancar</td>
+      </tr>
+      <tr>
+        <td><strong>Sprint 4</strong></td>
+        <td>4 Hari</td>
+        <td>Dashboard Widgets, Equity Curve (Recharts), Kalender Heatmap</td>
+        <td>Statistik otomatis & visual kalender</td>
+      </tr>
+      <tr>
+        <td><strong>Sprint 5</strong></td>
+        <td>4 Hari</td>
+        <td>Persiapan Webhook MT5, Prompt AI Trading Coach, Final Polish</td>
+        <td>Platform siap rilis & modular</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 9 -->
+  <h1>9. Future Killer Feature: AI Coach & MT5 Architecture</h1>
+  <div class="callout-pro">
+    <h4>🤖 AI Trading Coach (Phase 3)</h4>
+    <p>Setelah trade ditutup, sistem dapat mengirimkan parameter entry, exit, reason, dan gambar chart ke LLM (OpenAI/Gemini) untuk evaluasi otomatis:</p>
+    <p style="margin-top: 8px; font-style: italic; color: #fef08a;">
+      "Entry Buy di support M5 sesuai dengan plan BOS. Exit di TP menghasilkan RR 1:2.8. Catatan: Entry sangat disiplin, namun Stop Loss sebesar 52 point sedikit terlalu lebar untuk M5; Anda bisa mempersempit SL tepat di bawah liquidity sweep wick untuk mendongkrak RR menjadi 1:4."
+    </p>
+  </div>
+
+  <div class="callout-pro" style="background: #18181b; border: 1px solid #27272a;">
+    <h4 style="color: #60a5fa;">⚡ MetaTrader 5 (MT5) Auto-Bridge</h4>
+    <p>Arsitektur API telah dirancang dengan endpoint <code>/api/v1/integrations/mt5</code>. Sebuah script Expert Advisor (MQL5) atau Python script dapat mengirimkan posisi saat terbuka dan menutup secara otomatis tanpa perlu mengubah struktur database yang ada.</p>
+  </div>
+
+  <div style="margin-top: 36px; padding-top: 14px; border-top: 1px solid #e4e4e7; font-size: 8.5pt; color: #71717a; display: flex; justify-content: space-between;">
+    <span>Trading Journal Pro • Confidential Startup PRD</span>
+    <span>Created for Raihan • 2026</span>
+  </div>
+
+</body>
+</html>
