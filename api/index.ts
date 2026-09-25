@@ -288,13 +288,12 @@ export default async function handler(req: any, res: any) {
         // Insert initial ENTRY update
         await db.query(
           `INSERT INTO trade_updates 
-            (trade_id, update_type, message, current_price, floating_points, floating_money, created_at, updated_at) 
-           VALUES (?, 'ENTRY', ?, ?, 0, 0, ?, ?)`,
+            (trade_id, update_type, message, current_price, floating_points, floating_money, created_at) 
+           VALUES (?, 'ENTRY', ?, ?, 0, 0, ?)`,
           [
             tradeId,
             `Posisi ${(side || 'BUY').toUpperCase()} dieksekusi di harga ${ep}. SL: ${sl} | TP: ${tp}`,
             ep,
-            now,
             now,
           ]
         );
@@ -361,9 +360,9 @@ export default async function handler(req: any, res: any) {
 
       await db.query(
         `INSERT INTO trade_updates 
-          (trade_id, update_type, message, current_price, floating_points, floating_money, created_at, updated_at) 
-         VALUES (?, 'EXIT', ?, ?, ?, ?, ?, ?)`,
-        [tradeId, exitMsg, exitP, profitPoints, profitMoney, now, now]
+          (trade_id, update_type, message, current_price, floating_points, floating_money, created_at) 
+         VALUES (?, 'EXIT', ?, ?, ?, ?, ?)`,
+        [tradeId, exitMsg, exitP, profitPoints, profitMoney, now]
       );
 
       const [updatedRows]: any = await db.query('SELECT * FROM trades WHERE id = ?', [tradeId]);
@@ -392,8 +391,8 @@ export default async function handler(req: any, res: any) {
       const now = new Date();
       const [insertRes]: any = await db.query(
         `INSERT INTO trade_updates 
-          (trade_id, update_type, message, current_price, floating_points, floating_money, screenshot_url, created_at, updated_at) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          (trade_id, update_type, message, current_price, floating_points, floating_money, screenshot_url, created_at) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           tradeId,
           update_type || 'PROGRESS',
@@ -402,7 +401,6 @@ export default async function handler(req: any, res: any) {
           floating_points || 0,
           floating_money || 0,
           screenshot_url || null,
-          now,
           now,
         ]
       );
