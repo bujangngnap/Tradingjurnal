@@ -1,6 +1,7 @@
 import type { Trade, TradeUpdate, TradeStatus, DashboardStats } from '../types/trade';
 
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || (isLocal ? 'http://localhost:8000/api/v1' : '/api/v1');
 
 
 export class ApiService {
