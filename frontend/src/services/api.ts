@@ -1,26 +1,45 @@
 import type { Trade, TradeUpdate, TradeStatus, DashboardStats } from '../types/trade';
+import { AuthService } from './auth';
 
-const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || (isLocal ? 'http://localhost:8000/api/v1' : '/api/v1');
+const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || '/api/v1';
 
+function getHeaders(extra: Record<string, string> = {}): Record<string, string> {
+  const token = AuthService.getToken();
+  const headers: Record<string, string> = {
+    'Accept': 'application/json',
+    ...extra,
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
 
 export class ApiService {
   /**
-   * Fetch all trades from Laravel backend
+   * Fetch all trades for the authenticated user
    */
   static async getTrades(status?: string, pair?: string): Promise<Trade[]> {
     const params = new URLSearchParams();
     if (status && status !== 'ALL') params.append('status', status);
     if (pair && pair !== 'ALL') params.append('pair', pair);
 
-    const res = await fetch(`${API_BASE_URL}/trades?${params.toString()}`);
+    const res = await fetch(`${API_BASE_URL}/trades?${params.toString()}`, {
+      headers: getHeaders(),
+    });
+
+    if (res.status === 401) {
+      AuthService.clearSession();
+      throw new Error('UNAUTHORIZED');
+    }
+
     if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
     const json = await res.json();
     return json.data.map(this.transformTrade);
   }
 
   /**
-   * Create new trade via Laravel API
+   * Create new trade for the authenticated user
    */
   static async createTrade(data: {
     pair: string;
@@ -36,9 +55,15 @@ export class ApiService {
   }): Promise<Trade> {
     const res = await fetch(`${API_BASE_URL}/trades`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      headers: getHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(data),
     });
+
+    if (res.status === 401) {
+      AuthService.clearSession();
+      throw new Error('UNAUTHORIZED');
+    }
+
     if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
     const json = await res.json();
     return this.transformTrade(json.data);
@@ -47,18 +72,27 @@ export class ApiService {
   /**
    * Add timeline milestone update to running trade
    */
-  static async addUpdate(tradeId: string | number, data: {
-    update_type: string;
-    message: string;
-    current_price?: number;
-    floating_points?: number;
-    floating_money?: number;
-  }): Promise<TradeUpdate> {
+  static async addUpdate(
+    tradeId: string | number,
+    data: {
+      update_type: string;
+      message: string;
+      current_price?: number;
+      floating_points?: number;
+      floating_money?: number;
+    }
+  ): Promise<TradeUpdate> {
     const res = await fetch(`${API_BASE_URL}/trades/${tradeId}/updates`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      headers: getHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(data),
     });
+
+    if (res.status === 401) {
+      AuthService.clearSession();
+      throw new Error('UNAUTHORIZED');
+    }
+
     if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
     const json = await res.json();
     return json.data;
@@ -68,20 +102,26 @@ export class ApiService {
    * Close a trade and compute realized PnL
    */
   static async closeTrade(
-    tradeId: string | number, 
-    exitPrice: number, 
-    status: TradeStatus, 
+    tradeId: string | number,
+    exitPrice: number,
+    status: TradeStatus,
     notes?: string
   ): Promise<Trade> {
     const res = await fetch(`${API_BASE_URL}/trades/${tradeId}/close`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      headers: getHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({
         exit_price: exitPrice,
         status,
         notes,
       }),
     });
+
+    if (res.status === 401) {
+      AuthService.clearSession();
+      throw new Error('UNAUTHORIZED');
+    }
+
     if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
     const json = await res.json();
     return this.transformTrade(json.data);
@@ -93,15 +133,30 @@ export class ApiService {
   static async deleteTrade(tradeId: string | number): Promise<void> {
     const res = await fetch(`${API_BASE_URL}/trades/${tradeId}`, {
       method: 'DELETE',
+      headers: getHeaders(),
     });
+
+    if (res.status === 401) {
+      AuthService.clearSession();
+      throw new Error('UNAUTHORIZED');
+    }
+
     if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
   }
 
   /**
-   * Get overview statistics
+   * Get overview statistics for the authenticated user
    */
   static async getOverview(): Promise<DashboardStats> {
-    const res = await fetch(`${API_BASE_URL}/analytics/overview`);
+    const res = await fetch(`${API_BASE_URL}/analytics/overview`, {
+      headers: getHeaders(),
+    });
+
+    if (res.status === 401) {
+      AuthService.clearSession();
+      throw new Error('UNAUTHORIZED');
+    }
+
     if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
     const json = await res.json();
     return json.data;

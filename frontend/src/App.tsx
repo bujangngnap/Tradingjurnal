@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { TradeFeedView } from './components/TradeFeedView';
 import { DashboardView } from './components/DashboardView';
@@ -7,102 +7,147 @@ import { AddTradeModal } from './components/AddTradeModal';
 import { UpdateTradeModal } from './components/UpdateTradeModal';
 import { CloseTradeModal } from './components/CloseTradeModal';
 import { ImageModal } from './components/ImageModal';
+import { AuthModal } from './components/AuthModal';
 import { TradeStore } from './services/tradeStore';
 import { ApiService } from './services/api';
+import { AuthService } from './services/auth';
 import type { Trade, TradeUpdate, TradeStatus } from './types/trade';
-import { Zap, Database } from 'lucide-react';
+import type { User } from './types/auth';
+import { Zap, Database, Lock, ShieldCheck } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'feed' | 'dashboard' | 'calendar'>('feed');
-  const [trades, setTrades] = useState<Trade[]>(() => TradeStore.getTrades());
+  const [currentUser, setCurrentUser] = useState<User | null>(() => AuthService.getUser());
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(() => !AuthService.isAuthenticated());
+  const [trades, setTrades] = useState<Trade[]>([]);
   const [isBackendConnected, setIsBackendConnected] = useState<boolean>(false);
-  
+  const [isLoadingTrades, setIsLoadingTrades] = useState<boolean>(false);
+
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [updatingTrade, setUpdatingTrade] = useState<Trade | null>(null);
   const [closingTrade, setClosingTrade] = useState<Trade | null>(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
-  // Load trades from API or fallback to TradeStore
-  const loadTrades = async () => {
+  // Load trades for the authenticated user
+  const loadTrades = useCallback(async () => {
+    if (!AuthService.isAuthenticated()) {
+      setTrades([]);
+      setIsBackendConnected(false);
+      return;
+    }
+
+    setIsLoadingTrades(true);
     try {
       const apiTrades = await ApiService.getTrades();
-      if (apiTrades && apiTrades.length > 0) {
-        setTrades(apiTrades);
-        setIsBackendConnected(true);
-        return;
+      setTrades(apiTrades || []);
+      setIsBackendConnected(true);
+    } catch (e: any) {
+      if (e?.message === 'UNAUTHORIZED') {
+        setCurrentUser(null);
+        setIsAuthModalOpen(true);
+        setTrades([]);
+      } else {
+        console.warn('Backend API connection issue:', e);
       }
-    } catch (e) {
-      console.warn('Backend API not responding, using local offline storage:', e);
+    } finally {
+      setIsLoadingTrades(false);
     }
-    // Fallback to local store
-    setTrades(TradeStore.getTrades());
+  }, []);
+
+  // Initialize & verify session on mount
+  useEffect(() => {
+    if (AuthService.isAuthenticated()) {
+      loadTrades();
+      // Verify session token validity with server
+      AuthService.fetchCurrentUser().then(user => {
+        if (user) {
+          setCurrentUser(user);
+        } else {
+          setCurrentUser(null);
+          setIsAuthModalOpen(true);
+          setTrades([]);
+        }
+      });
+    } else {
+      setIsAuthModalOpen(true);
+    }
+  }, [loadTrades]);
+
+  // Auth Success Handler
+  const handleAuthSuccess = (user: User) => {
+    setCurrentUser(user);
+    setIsAuthModalOpen(false);
+    loadTrades();
   };
 
-  useEffect(() => {
-    loadTrades();
-  }, []);
+  // Logout Handler
+  const handleLogout = () => {
+    AuthService.logout();
+    setCurrentUser(null);
+    setTrades([]);
+    setIsBackendConnected(false);
+    setIsAuthModalOpen(true);
+  };
 
   const stats = TradeStore.calculateStats(trades);
   const openTradesCount = trades.filter(t => t.status === 'OPEN').length;
 
-  const handleSaveNewTrade = async (tradeData: Omit<Trade, 'id' | 'updates' | 'opened_at' | 'status' | 'profit_point' | 'profit_money'>) => {
-    try {
-      if (isBackendConnected) {
-        await ApiService.createTrade(tradeData);
-        await loadTrades();
-        setActiveTab('feed');
-        return;
-      }
-    } catch (e) {
-      console.error('API create failed, saving to local store:', e);
+  const handleOpenAddModal = () => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+      return;
     }
-    TradeStore.addTrade(tradeData);
-    setTrades(TradeStore.getTrades());
-    setActiveTab('feed');
+    setIsAddModalOpen(true);
+  };
+
+  const handleSaveNewTrade = async (
+    tradeData: Omit<Trade, 'id' | 'updates' | 'opened_at' | 'status' | 'profit_point' | 'profit_money'>
+  ) => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    try {
+      await ApiService.createTrade(tradeData);
+      await loadTrades();
+      setActiveTab('feed');
+    } catch (e) {
+      console.error('API create failed:', e);
+      alert('Gagal menyimpan trade ke server. Silakan coba lagi.');
+    }
   };
 
   const handleSaveUpdate = async (tradeId: string, update: Omit<TradeUpdate, 'id' | 'trade_id' | 'created_at'>) => {
     try {
-      if (isBackendConnected) {
-        await ApiService.addUpdate(tradeId, update);
-        await loadTrades();
-        return;
-      }
+      await ApiService.addUpdate(tradeId, update);
+      await loadTrades();
     } catch (e) {
-      console.error('API update failed, saving locally:', e);
+      console.error('API update failed:', e);
+      alert('Gagal menyimpan update progress trade.');
     }
-    TradeStore.addUpdate(tradeId, update);
-    setTrades(TradeStore.getTrades());
   };
 
   const handleConfirmClose = async (tradeId: string, exitPrice: number, status: TradeStatus, notes?: string) => {
     try {
-      if (isBackendConnected) {
-        await ApiService.closeTrade(tradeId, exitPrice, status, notes);
-        await loadTrades();
-        return;
-      }
+      await ApiService.closeTrade(tradeId, exitPrice, status, notes);
+      await loadTrades();
     } catch (e) {
-      console.error('API close failed, closing locally:', e);
+      console.error('API close failed:', e);
+      alert('Gagal menutup trade pada server.');
     }
-    TradeStore.closeTrade(tradeId, exitPrice, status, notes);
-    setTrades(TradeStore.getTrades());
   };
 
   const handleDeleteTrade = async (tradeId: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus trade ini dari jurnal?')) {
+    if (confirm('Apakah Anda yakin ingin menghapus trade ini dari jurnal Anda?')) {
       try {
-        if (isBackendConnected) {
-          await ApiService.deleteTrade(tradeId);
-          await loadTrades();
-          return;
-        }
+        await ApiService.deleteTrade(tradeId);
+        await loadTrades();
       } catch (e) {
-        console.error('API delete failed, deleting locally:', e);
+        console.error('API delete failed:', e);
+        alert('Gagal menghapus trade.');
       }
-      TradeStore.deleteTrade(tradeId);
-      setTrades(TradeStore.getTrades());
     }
   };
 
@@ -113,8 +158,11 @@ export function App() {
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onOpenNewTrade={() => setIsAddModalOpen(true)}
+        onOpenNewTrade={handleOpenAddModal}
         openTradesCount={openTradesCount}
+        currentUser={currentUser}
+        onLogout={handleLogout}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
       />
 
       {/* Global Market Ticker Bar */}
@@ -148,15 +196,22 @@ export function App() {
           </div>
 
           <div className="flex items-center space-x-2 sm:space-x-3 text-[10px] sm:text-[11px] shrink-0">
-            {isBackendConnected ? (
-              <span className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
-                <Database className="w-3 h-3" />
-                <span>Laravel 11 API</span>
+            {currentUser ? (
+              <span className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-[#F5B942]/10 text-[#F5B942] border border-[#F5B942]/20 font-bold">
+                <ShieldCheck className="w-3 h-3 text-[#F5B942]" />
+                <span>Akun: {currentUser.name}</span>
               </span>
             ) : (
-              <span className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold">
+              <span className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-zinc-800/80 text-zinc-400 border border-zinc-700 font-medium">
+                <Lock className="w-3 h-3" />
+                <span>Belum Login</span>
+              </span>
+            )}
+
+            {isBackendConnected && (
+              <span className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
                 <Database className="w-3 h-3" />
-                <span>Local Storage</span>
+                <span>TiDB Cloud (Isolated)</span>
               </span>
             )}
             
@@ -170,23 +225,65 @@ export function App() {
 
       {/* Main Body Content */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-28 md:pb-8 min-w-0">
-        {activeTab === 'feed' && (
-          <TradeFeedView
-            trades={trades}
-            onAddUpdate={(trade) => setUpdatingTrade(trade)}
-            onCloseTrade={(trade) => setClosingTrade(trade)}
-            onDeleteTrade={handleDeleteTrade}
-            onViewImage={(url) => setPreviewImageUrl(url)}
-            onOpenNewTrade={() => setIsAddModalOpen(true)}
-          />
-        )}
+        {!currentUser ? (
+          /* Unauthenticated Landing Card */
+          <div className="max-w-2xl mx-auto my-12 p-8 sm:p-12 rounded-3xl bg-[#141414] border border-[#2A2A2A] text-center shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-[#F5B942] to-transparent" />
+            <div className="w-16 h-16 rounded-2xl bg-[#1D1D1D] border border-[#333333] shadow-lg shadow-[#F5B942]/10 flex items-center justify-center mx-auto mb-6">
+              <ShieldCheck className="w-8 h-8 text-[#F5B942]" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              Sistem Multi-User Trading Journal
+            </h2>
+            <p className="text-sm sm:text-base text-zinc-400 mt-3 max-w-lg mx-auto leading-relaxed">
+              Setiap trader memiliki akun dan jurnal pribadi yang 100% terisolasi. Data analisis, win rate, dan riwayat posisi trading Anda aman dan privat.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#F5B942] to-[#E5A830] text-black font-extrabold text-sm shadow-lg shadow-[#F5B942]/20 hover:shadow-[#F5B942]/35 active:scale-95 transition-all cursor-pointer"
+              >
+                Masuk atau Daftar Akun Gratis
+              </button>
+            </div>
+            <div className="mt-6 flex items-center justify-center space-x-6 text-xs text-zinc-500">
+              <span className="flex items-center space-x-1">
+                <span>✓</span> <span>Gratis Selamanya</span>
+              </span>
+              <span className="flex items-center space-x-1">
+                <span>✓</span> <span>Data Terenkripsi</span>
+              </span>
+              <span className="flex items-center space-x-1">
+                <span>✓</span> <span>TiDB Cloud Serverless</span>
+              </span>
+            </div>
+          </div>
+        ) : isLoadingTrades ? (
+          <div className="flex flex-col items-center justify-center py-20 text-zinc-400">
+            <div className="w-8 h-8 border-2 border-[#F5B942] border-t-transparent rounded-full animate-spin mb-4" />
+            <p className="text-sm font-medium">Memuat data jurnal trading Anda...</p>
+          </div>
+        ) : (
+          <>
+            {activeTab === 'feed' && (
+              <TradeFeedView
+                trades={trades}
+                onAddUpdate={(trade) => setUpdatingTrade(trade)}
+                onCloseTrade={(trade) => setClosingTrade(trade)}
+                onDeleteTrade={handleDeleteTrade}
+                onViewImage={(url) => setPreviewImageUrl(url)}
+                onOpenNewTrade={handleOpenAddModal}
+              />
+            )}
 
-        {activeTab === 'dashboard' && (
-          <DashboardView trades={trades} stats={stats} />
-        )}
+            {activeTab === 'dashboard' && (
+              <DashboardView trades={trades} stats={stats} />
+            )}
 
-        {activeTab === 'calendar' && (
-          <CalendarView trades={trades} />
+            {activeTab === 'calendar' && (
+              <CalendarView trades={trades} />
+            )}
+          </>
         )}
       </main>
 
@@ -195,7 +292,7 @@ export function App() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <span className="font-extrabold text-white tracking-wider">TRADING JOURNAL PRO</span>
-            <span>v1.0 (MVP)</span>
+            <span>v1.0 (Multi-User Cloud)</span>
           </div>
           <p className="text-zinc-500">
             Dibuat untuk trader berdisiplin tinggi • Siap integrasi MT5 & AI Trading Coach
@@ -209,6 +306,13 @@ export function App() {
       </footer>
 
       {/* Modals */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={handleAuthSuccess}
+        isDismissable={Boolean(currentUser)}
+      />
+
       <AddTradeModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}

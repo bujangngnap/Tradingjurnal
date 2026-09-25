@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Calendar, LayoutDashboard, Radio } from 'lucide-react';
-
+import { Plus, Calendar, LayoutDashboard, Radio, LogOut, LogIn } from 'lucide-react';
+import type { User } from '../types/auth';
 
 interface NavbarProps {
   activeTab: 'feed' | 'dashboard' | 'calendar';
   setActiveTab: (tab: 'feed' | 'dashboard' | 'calendar') => void;
   onOpenNewTrade: () => void;
   openTradesCount: number;
+  currentUser: User | null;
+  onLogout: () => void;
+  onOpenAuth: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -14,6 +17,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveTab,
   onOpenNewTrade,
   openTradesCount,
+  currentUser,
+  onLogout,
+  onOpenAuth,
 }) => {
   const [time, setTime] = useState<string>('');
 
@@ -96,13 +102,46 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </nav>
 
-            {/* Actions & Live Clock */}
+            {/* Actions & User Profile */}
             <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
               <div className="hidden lg:flex flex-col text-right">
                 <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">UTC TIME</span>
                 <span className="text-xs font-mono font-medium text-zinc-200">{time || '00:00:00'}</span>
               </div>
 
+              {/* User Profile Pill or Login Button */}
+              {currentUser ? (
+                <div className="flex items-center space-x-1.5 sm:space-x-2">
+                  <div className="flex items-center space-x-1.5 sm:space-x-2 bg-[#161616] border border-[#2E2E2E] px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl">
+                    <div className="w-6 h-6 rounded-full bg-[#F5B942]/20 border border-[#F5B942]/40 flex items-center justify-center text-[#F5B942] font-black text-xs shrink-0">
+                      {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'T'}
+                    </div>
+                    <div className="hidden sm:flex flex-col text-left">
+                      <span className="text-xs font-bold text-white leading-tight max-w-[110px] truncate">
+                        {currentUser.name}
+                      </span>
+                      <span className="text-[10px] text-zinc-400 leading-tight">Pro Trader</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={onLogout}
+                    title="Keluar dari Akun"
+                    className="p-1.5 sm:p-2 text-zinc-400 hover:text-rose-400 hover:bg-rose-950/30 border border-transparent hover:border-rose-900/40 rounded-xl transition-all cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={onOpenAuth}
+                  className="flex items-center space-x-1.5 bg-[#1F1F1F] hover:bg-[#2A2A2A] text-zinc-200 border border-zinc-700 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer"
+                >
+                  <LogIn className="w-4 h-4 text-[#F5B942]" />
+                  <span>Masuk</span>
+                </button>
+              )}
+
+              {/* New Trade Button */}
               <button
                 onClick={onOpenNewTrade}
                 className="group flex items-center space-x-1 sm:space-x-2 bg-gradient-to-r from-[#F5B942] to-[#E5A830] hover:from-[#f8c45e] hover:to-[#efa823] text-black font-bold px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl shadow-lg shadow-[#F5B942]/20 hover:shadow-[#F5B942]/30 active:scale-95 transition-all text-xs sm:text-sm cursor-pointer whitespace-nowrap shrink-0"

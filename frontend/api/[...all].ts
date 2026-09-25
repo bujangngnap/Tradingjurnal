@@ -1,4 +1,8 @@
 import mysql from 'mysql2/promise';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'trading-journal-super-secret-jwt-key-2026';
 
 let pool: mysql.Pool | null = null;
 
@@ -23,6 +27,23 @@ function getPool() {
   return pool;
 }
 
+function getAuthUser(req: any): { id: number; email: string; name: string } | null {
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  if (!authHeader || typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+  const token = authHeader.substring(7).trim();
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    if (decoded && decoded.id) {
+      return decoded;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function handler(req: any, res: any) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -30,7 +51,7 @@ export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
   );
 
   if (req.method === 'OPTIONS') {
@@ -43,16 +64,143 @@ export default async function handler(req: any, res: any) {
   const db = getPool();
 
   try {
+    // =============================================================
+    // 0. AUTHENTICATION ROUTES (PUBLIC)
+    // =============================================================
+
+    // 0.1 POST /api/v1/auth/register or /api/auth/register
+    if ((pathname === '/api/v1/auth/register' || pathname === '/api/auth/register') && req.method === 'POST') {
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      const { name, email, password } = body || {};
+
+      if (!name || typeof name !== 'string' || name.trim().length < 2) {
+        return res.status(400).json({ success: false, message: 'Nama lengkap wajib diisi (minimal 2 karakter).' });
+      }
+      if (!email || typeof email !== 'string' || !email.includes('@')) {
+        return res.status(400).json({ success: false, message: 'Format email tidak valid.' });
+      }
+      if (!password || typeof password !== 'string' || password.length < 6) {
+        return res.status(400).json({ success: false, message: 'Password minimal 6 karakter.' });
+      }
+
+      const cleanEmail = email.trim().toLowerCase();
+      const cleanName = name.trim();
+
+      // Check if email already exists
+      const [existingUsers]: any = await db.query('SELECT id FROM users WHERE email = ?', [cleanEmail]);
+      if (existingUsers.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email sudah terdaftar. Silakan login dengan akun Anda.',
+        });
+      }
+
+      // Hash password & insert
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const now = new Date();
+      const [insertResult]: any = await db.query(
+        'INSERT INTO users (name, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+        [cleanName, cleanEmail, hashedPassword, now, now]
+      );
+
+      const userId = insertResult.insertId;
+      const token = jwt.sign(
+        { id: userId, email: cleanEmail, name: cleanName },
+        JWT_SECRET,
+        { expiresIn: '30d' }
+      );
+
+      return res.status(201).json({
+        success: true,
+        message: 'Registrasi berhasil!',
+        token,
+        user: {
+          id: userId,
+          name: cleanName,
+          email: cleanEmail,
+        },
+      });
+    }
+
+    // 0.2 POST /api/v1/auth/login or /api/auth/login
+    if ((pathname === '/api/v1/auth/login' || pathname === '/api/auth/login') && req.method === 'POST') {
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      const { email, password } = body || {};
+
+      if (!email || !password) {
+        return res.status(400).json({ success: false, message: 'Email dan password wajib diisi.' });
+      }
+
+      const cleanEmail = String(email).trim().toLowerCase();
+      const [userRows]: any = await db.query('SELECT * FROM users WHERE email = ?', [cleanEmail]);
+
+      if (userRows.length === 0) {
+        return res.status(401).json({ success: false, message: 'Email atau password salah.' });
+      }
+
+      const user = userRows[0];
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ success: false, message: 'Email atau password salah.' });
+      }
+
+      const token = jwt.sign(
+        { id: user.id, email: user.email, name: user.name },
+        JWT_SECRET,
+        { expiresIn: '30d' }
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: 'Login berhasil!',
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      });
+    }
+
+    // 0.3 GET /api/v1/auth/me or /api/auth/me
+    if ((pathname === '/api/v1/auth/me' || pathname === '/api/auth/me') && req.method === 'GET') {
+      const authUser = getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ success: false, message: 'Sesi tidak valid atau telah berakhir.' });
+      }
+
+      const [userRows]: any = await db.query('SELECT id, name, email, created_at FROM users WHERE id = ?', [authUser.id]);
+      if (userRows.length === 0) {
+        return res.status(404).json({ success: false, message: 'Akun tidak ditemukan.' });
+      }
+
+      return res.status(200).json({
+        success: true,
+        user: userRows[0],
+      });
+    }
+
+    // =============================================================
+    // PROTECTED ROUTES CHECK
+    // =============================================================
+    const authUser = getAuthUser(req);
+    if (!authUser) {
+      return res.status(401).json({
+        success: false,
+        message: 'Akses ditolak. Silakan login terlebih dahulu untuk mengelola jurnal trading Anda.',
+      });
+    }
+
     // -------------------------------------------------------------
-    // 1. GET /api/v1/trades & POST /api/v1/trades
+    // 1. GET /api/v1/trades & POST /api/v1/trades (ISOLATED BY USER_ID)
     // -------------------------------------------------------------
     if (pathname === '/api/v1/trades' || pathname === '/api/trades') {
       if (req.method === 'GET') {
         const status = url.searchParams.get('status');
         const pair = url.searchParams.get('pair');
 
-        let query = 'SELECT * FROM trades WHERE 1=1';
-        const params: any[] = [];
+        let query = 'SELECT * FROM trades WHERE user_id = ?';
+        const params: any[] = [authUser.id];
 
         if (status && status !== 'ALL') {
           query += ' AND status = ?';
@@ -114,11 +262,12 @@ export default async function handler(req: any, res: any) {
 
         const [insertRes]: any = await db.query(
           `INSERT INTO trades 
-            (pair, side, entry_price, sl_price, tp_price, lot, timeframe, session, reason, status, profit_point, profit_money, rr_ratio, screenshot_before, opened_at, created_at, updated_at) 
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'OPEN', 0, 0, ?, ?, ?, ?, ?)`,
+            (user_id, pair, side, entry_price, sl_price, tp_price, lot, timeframe, session, reason, status, profit_point, profit_money, rr_ratio, screenshot_before, opened_at, created_at, updated_at) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'OPEN', 0, 0, ?, ?, ?, ?, ?)`,
           [
-            pair.toUpperCase(),
-            side.toUpperCase(),
+            authUser.id,
+            (pair || 'EURUSD').toUpperCase(),
+            (side || 'BUY').toUpperCase(),
             ep,
             sl,
             tp,
@@ -143,7 +292,7 @@ export default async function handler(req: any, res: any) {
            VALUES (?, 'ENTRY', ?, ?, 0, 0, ?, ?)`,
           [
             tradeId,
-            `Posisi ${side.toUpperCase()} dieksekusi di harga ${ep}. SL: ${sl} | TP: ${tp}`,
+            `Posisi ${(side || 'BUY').toUpperCase()} dieksekusi di harga ${ep}. SL: ${sl} | TP: ${tp}`,
             ep,
             now,
             now,
@@ -168,9 +317,9 @@ export default async function handler(req: any, res: any) {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const { exit_price, status, notes } = body;
 
-      const [tradeRows]: any = await db.query('SELECT * FROM trades WHERE id = ?', [tradeId]);
+      const [tradeRows]: any = await db.query('SELECT * FROM trades WHERE id = ? AND user_id = ?', [tradeId, authUser.id]);
       if (tradeRows.length === 0) {
-        return res.status(404).json({ success: false, message: 'Trade not found' });
+        return res.status(404).json({ success: false, message: 'Trade tidak ditemukan atau bukan milik akun ini.' });
       }
 
       const trade = tradeRows[0];
@@ -178,7 +327,6 @@ export default async function handler(req: any, res: any) {
       const exitP = parseFloat(exit_price);
       const isGold = trade.pair.toUpperCase().includes('XAU');
       const pointMultiplier = isGold ? 10 : 10000;
-      const moneyMultiplier = isGold ? 100 : 100000;
 
       let profitPoints = 0;
       if (trade.side === 'BUY') {
@@ -193,7 +341,7 @@ export default async function handler(req: any, res: any) {
       await db.query(
         `UPDATE trades 
          SET status = ?, exit_price = ?, profit_point = ?, profit_money = ?, closed_at = ?, updated_at = ? 
-         WHERE id = ?`,
+         WHERE id = ? AND user_id = ?`,
         [
           status,
           exitP,
@@ -202,6 +350,7 @@ export default async function handler(req: any, res: any) {
           now,
           now,
           tradeId,
+          authUser.id,
         ]
       );
 
@@ -234,6 +383,12 @@ export default async function handler(req: any, res: any) {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const { update_type, message, current_price, floating_points, floating_money, screenshot_url } = body;
 
+      // Verify trade ownership
+      const [ownerRows]: any = await db.query('SELECT id FROM trades WHERE id = ? AND user_id = ?', [tradeId, authUser.id]);
+      if (ownerRows.length === 0) {
+        return res.status(404).json({ success: false, message: 'Trade tidak ditemukan atau bukan milik akun Anda.' });
+      }
+
       const now = new Date();
       const [insertRes]: any = await db.query(
         `INSERT INTO trade_updates 
@@ -254,7 +409,7 @@ export default async function handler(req: any, res: any) {
 
       // If SL_TO_BE, update the trade's SL to entry price
       if (update_type === 'SL_TO_BE') {
-        await db.query('UPDATE trades SET sl_price = entry_price WHERE id = ?', [tradeId]);
+        await db.query('UPDATE trades SET sl_price = entry_price WHERE id = ? AND user_id = ?', [tradeId, authUser.id]);
       }
 
       const [newUpdateRows]: any = await db.query('SELECT * FROM trade_updates WHERE id = ?', [insertRes.insertId]);
@@ -269,8 +424,8 @@ export default async function handler(req: any, res: any) {
       const tradeId = singleMatch[1];
 
       if (req.method === 'GET') {
-        const [rows]: any = await db.query('SELECT * FROM trades WHERE id = ?', [tradeId]);
-        if (rows.length === 0) return res.status(404).json({ success: false, message: 'Trade not found' });
+        const [rows]: any = await db.query('SELECT * FROM trades WHERE id = ? AND user_id = ?', [tradeId, authUser.id]);
+        if (rows.length === 0) return res.status(404).json({ success: false, message: 'Trade tidak ditemukan.' });
         const trade = rows[0];
         const [updates]: any = await db.query('SELECT * FROM trade_updates WHERE trade_id = ?', [tradeId]);
         trade.updates = updates;
@@ -278,18 +433,27 @@ export default async function handler(req: any, res: any) {
       }
 
       if (req.method === 'DELETE') {
+        const [rows]: any = await db.query('SELECT id FROM trades WHERE id = ? AND user_id = ?', [tradeId, authUser.id]);
+        if (rows.length === 0) return res.status(404).json({ success: false, message: 'Trade tidak ditemukan atau bukan milik akun Anda.' });
+
         await db.query('DELETE FROM trade_updates WHERE trade_id = ?', [tradeId]);
-        await db.query('DELETE FROM trades WHERE id = ?', [tradeId]);
-        return res.status(200).json({ success: true, message: 'Trade deleted' });
+        await db.query('DELETE FROM trades WHERE id = ? AND user_id = ?', [tradeId, authUser.id]);
+        return res.status(200).json({ success: true, message: 'Trade berhasil dihapus.' });
       }
     }
 
     // -------------------------------------------------------------
-    // 5. GET /api/v1/analytics/overview
+    // 5. GET /api/v1/analytics/overview (ISOLATED BY USER_ID)
     // -------------------------------------------------------------
     if (pathname === '/api/v1/analytics/overview' || pathname === '/api/analytics/overview') {
-      const [closedTrades]: any = await db.query("SELECT * FROM trades WHERE status != 'OPEN'");
-      const [allTrades]: any = await db.query('SELECT * FROM trades');
+      const [closedTrades]: any = await db.query(
+        "SELECT * FROM trades WHERE status != 'OPEN' AND user_id = ?",
+        [authUser.id]
+      );
+      const [allTrades]: any = await db.query(
+        'SELECT * FROM trades WHERE user_id = ?',
+        [authUser.id]
+      );
 
       const totalTrades = allTrades.length;
       const wins = closedTrades.filter((t: any) => parseFloat(t.profit_money) > 0);
